@@ -1,21 +1,77 @@
-# paper-xray
+<div align="center">
 
-一句话：把一篇论文还原成作者真实的思考过程，写到读者比读十遍原文理解更深。
+# Paper X-Ray
 
-## 怎么用
+**A deep-reading skill that reconstructs how a paper was actually thought up — not what its abstract says.**
 
-1. 把 `SKILL.md` 全文贴作 system prompt；用 Claude Code 的话，放进 `~/.claude/skills/paper-xray/SKILL.md`，说"讲透这篇论文"即可调用。
-2. 给它论文：本地 PDF、arXiv 链接、或粘贴正文。有公开代码和原图目录就一起给，它会以代码为准、按绝对路径引用原图。
-3. 选一种交付：`md` 得到 Markdown 长文，适合精读和打印；`html` 得到自包含的交互网页，关键机制可拖动、可逐步播放。参数里不写，它会先问你。
+[中文文档](./README.zh-CN.md) · [Skill](./SKILL.md) · [Showcase](#showcase)
 
-## 它会做什么
+![Skill](https://img.shields.io/badge/skill-paper--xray-c1502e)
+![Prompt](https://img.shields.io/badge/prompt-verbatim_15_sections-2e7d4f)
+![Outputs](https://img.shields.io/badge/outputs-markdown__html-58C4DD)
+![Agent](https://img.shields.io/badge/agent-Claude_Code-d97757)
+![License](https://img.shields.io/badge/license-MIT-8a8172)
 
-- 还原作者的底牌：前人在哪个具体场景下撞墙、作者凭哪张牌敢投、哪个设计承重、哪些是装饰。
-- 每个公式第一次出现就给形状和含义，配一个能用手算的小实例；核心机制带着实际数据走完全程，基线在哪一步、为什么失败，落在具体的状态量上。
-- 像审稿人一样查超参数来源、消融是否隔离变量、基线是否对齐、数据有没有泄露。论文没给的信息，明说缺，不替它圆。
-- 写法按 Hinton 的标准：短句、主语明确、动词精确、不拟人化模型；讲法借 3Blue1Brown 的路数：先让读者看见，再让读者算。
+![Paper X-Ray banner](./assets/hero-banner.png)
 
-## 说明
+</div>
 
-- `SKILL.md` 就是完整 prompt，一字未删。想先看标准长什么样，直接读它最后的 `examples` 节。
-- 输出的文档结构由论文本身决定，不套模板；标题是只属于这篇论文的问题，不是"背景方法实验"。
+## Overview
+
+Most paper explanations restate the paper. Paper X-Ray recovers what the paper left out: the specific scene where prior methods failed, the bet the authors placed, which designs carry the result and which are decoration, what each symbol looks like on a concrete example, and where the authors are confident versus bluffing. The reader should finish understanding the paper more deeply than from reading the original ten times.
+
+The method combines a Hinton-style voice (plain language, mechanisms over adjectives, honest about weak explanations) with a 3Blue1Brown-style exposition (show first, then compute; one idea per figure; consistent color per symbol).
+
+## Features
+
+- **Author reconstruction** — identifies the structural failure behind the work, the authors' strongest card, and the evidence for it.
+- **Concrete mathematics** — every symbol ships with shape and meaning; every key formula is preceded by its purpose and followed by a hand-computable micro-example.
+- **Full worked examples** — multi-round traces with real state, run on both the paper's method and the baseline, down to the step where the baseline breaks.
+- **Skeptical review** — hyperparameters, ablations, baselines, leakage, cost, and scope are checked; missing information is stated as missing, never papered over.
+- **Two delivery branches** — `md` for a long-form Markdown document, `html` for a self-contained interactive page (KaTeX, sliders, step-through traces, SVG/Canvas).
+- **Paper-type adaptation** — emphasis shifts for methods, theory, systems, empirical studies, agent/LLM pipelines, and datasets.
+
+## Showcase
+
+The complete prompt, rendered as paginated A4 sheets for presentation and sharing:
+
+![A4 showcase page](./assets/showcase-a4.png)
+
+## Installation
+
+Copy `SKILL.md` into your skills directory:
+
+```bash
+mkdir -p ~/.claude/skills/paper-xray
+cp SKILL.md ~/.claude/skills/paper-xray/SKILL.md
+```
+
+## Usage
+
+1. Provide the paper: a local PDF, an arXiv identifier or link, or pasted text. Attach public code and the original figure directory when available — code takes precedence over text, figures are referenced by absolute path.
+2. Select the delivery branch: `md` for the text edition, `html` for the interactive visual edition. If neither is specified, the skill asks once.
+3. The skill reads the full text including appendices, footnotes, and captions, then writes the document section by section. Long documents are appended incrementally and never compressed to fit a single response.
+
+## One-Line Agent Prompt
+
+To have your own agent install this project, send it exactly this:
+
+```text
+Install SKILL.md from the paper-xray repository as a skill named paper-xray into my agent skills directory and confirm it is registered and callable.
+```
+
+## Repository Layout
+
+```text
+paper-xray/
+├── SKILL.md                  # The complete skill prompt (verbatim, 15 sections + delivery rules)
+├── README.md                 # This file
+├── README.zh-CN.md           # 中文文档
+└── assets/
+    ├── hero-banner.png       # Project banner
+    └── showcase-a4.png       # A4 showcase preview
+```
+
+## License
+
+MIT. See [LICENSE](./LICENSE).
