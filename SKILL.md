@@ -1,6 +1,6 @@
 ---
 name: paper-xray
-description: "讲透一篇论文的深度解读长文：还原作者是怎么想出来的、手里的底牌、哪些设计承重哪些是装饰；把每个公式落到形状、小实例和几何画面上；像认真的审稿人一样怀疑式阅读。Hinton 式的朴素语气，加 3Blue1Brown 式的视觉直觉。交付可选 MD（偏文字讲解）或 HTML（偏交互视觉）。Use when the user wants an in-depth, long-form explanation of one specific research paper (PDF, arXiv, link, or pasted text), e.g. 讲透这篇论文、论文精读、深度解读这篇、把这篇论文讲明白、写一篇论文解读、给论文拍个X光、paper deep dive、explain this paper in depth. Not for 中英对照全文翻译 (nature-reader), 审稿打分 (ccf-paper-reviewer / nature-reviewer), 做 PPT (nature-paper2ppt), or 单个概念讲解 (maestro)."
+description: "讲透单篇论文：还原作者思路、把公式讲透、怀疑式审读；交付 MD 或 HTML。"
 argument-hint: "<PDF 路径 | arXiv 号/链接 | 粘贴正文> [md|html]"
 ---
 
