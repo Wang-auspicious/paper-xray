@@ -349,45 +349,66 @@ Produce **one** self-contained `<short-name>.html`. No requirement is relaxed: i
 
 ### 5.1 Layout spec (use these numbers; don't redesign them)
 
-The model is a distill.pub-style long read: **the body text is the only protagonist**, and every supporting element steps aside — pushed to the margin, dimmed, or hidden. Not a dashboard, not a docs site with a permanent left rail plus a content pane. One test decides it: the reader's eye lands on the first line of prose, not on a TOC, a progress bar, or any other piece of chrome.
+The model is a distill.pub-style long read: the prose fills the space it deserves, and the TOC sits flush against the far-left edge as a quiet index. **TOC hard left, body starting a short gap to its right and running all the way to the right edge** — no "whole block centered with big symmetric margins," and no "TOC floating mid-page with dead space to its left."
 
-Write every color as a CSS variable on `:root` and override the same set for the dark theme (see 5.2). Never hard-code a hex value in the body.
+Write every color as a CSS variable on `:root` and override the same set for the dark theme. Never hard-code a hex value in the body. These are the Claude Warm Paper palette values — copy them.
 
-| Item | Light | Dark |
+Copy the variable names in the first column exactly; later sections refer to them and won't repeat the values.
+
+| Variable | Use | Light | Dark |
+|---|---|---|---|
+| `--bg` | page background | `#faf9f5` | `#30302e` |
+| `--surface-secondary` | secondary surface, Note cards | `#f5f4ed` | `#262624` |
+| `--surface-code` | code-block background | `#f3f1ea` | `#232321` |
+| `--surface-raised` | card background | `#ffffff` | `#3d3d3a` |
+| `--ink` | body ink | `#141413` | `#faf9f5` |
+| `--ink-secondary` | secondary text | `#3d3d3a` | `#c2c0b6` |
+| `--ink-tertiary` | tertiary text (TOC, captions, comments) | `#73726c` | `#9c9a92` |
+| `--accent` | accent | `#d97757` | `#e38b6b` |
+| `--accent-hover` | accent hover | `#bd6245` | `#f0a283` |
+| `--accent-text` | inline code text, code highlights | `#ad493e` | `#e38b6b` |
+| `--highlight` | highlight background | `#ebdbbc` | `#3a3936` |
+| `--line` | rules, borders | `#deddd8` | `#3d3d3a` |
+
+Symbol palette (shared by prose, formulas, and figures; one set per theme):
+
+| Semantic | Light | Dark |
 |---|---|---|
-| Page background | `#FAF6EE` warm ivory | `#16130F` warm near-black |
-| Card / code background | `#FFFCF7` | `#1F1B16` |
-| Body ink | `#262220` warm black | `#E8E0D4` |
-| Secondary text | `#6B6157` | `#9C9086` |
-| Rules | `#E8DDCB` | `#332C24` |
-| Accent | `#B4552D` terracotta | `#D97757` (lightened for contrast on dark) |
-| Note / Warning background | `#F3EADB` / `#F7E6DC` | `#2A231B` / `#33231C` |
+| red | `#A73D39` | `#EE8884` |
+| orange | `#BD6245` | `#F0A283` |
+| yellow | `#805C1F` | `#D1A041` |
+| green | `#437426` | `#7AB948` |
+| cyan | `#327A7D` | `#6FBEC1` |
+| blue | `#3266AD` | `#80AADD` |
+| purple | `#725299` | `#B793DE` |
+| pink | `#9A4B70` | `#E08DB1` |
 
 | Item | Value |
 |---|---|
-| Container | `max-width: 1120px`, centered, 32px side padding |
-| Grid | **single column by default**: body measure `max-width: 720px`, `margin-inline: auto` |
-| Margin column | Only at viewports ≥1400px: `grid-template-columns: 148px minmax(0, 720px)`, margin column left, body sitting right of center. Below 1400px everything in the margin degrades into the body |
-| Wide figures/tables | may run to `960px`, bleeding **symmetrically** around the body measure, never dumped to one side |
-| Top progress bar | 2px, `#B4552D`, `opacity: .38`, `position: fixed; top: 0`. **Fades to `opacity: 0` 1.2s after scrolling stops**, fades back in while scrolling. It answers "how far in am I" and is never the most prominent thing on the page |
-| TOC | **not a permanent rail.** Below 1400px it does not appear on the page at all — a small "Contents" button in the top-right opens a floating `position: fixed` card (`max-height: 70vh`, scrollable) that closes on click. At ≥1400px: a 148px left column, `position: sticky; top: 40px`, 12px type, 1.55 line-height, resting color one notch below `--muted` (`opacity: .72`); only the current section rises to `--ink` with a 2px `--accent` left bar. The TOC column never gets a background or a border |
-| Theme toggle | A 32px circular button `position: fixed` in the top-right, ☀/☾ (text glyph or inline SVG). Toggling sets `data-theme` on `<html>` and writes `localStorage.setItem('theme', …)`. A head script must read localStorage and `prefers-color-scheme` **before `<body>` renders** to avoid a white flash. If `localStorage` is unavailable (some browsers under `file://`), fall back silently to the system preference |
-| Breakpoints | ≤960px: wide figures and tables stop bleeding and pull into the body measure; ≤640px: container padding 20px, `h1` 25px, body 16px |
+| Container | `max-width: 1560px`, centered, `48px` side padding |
+| Grid | `grid-template-columns: 224px minmax(0, 1fr)`, `gap: 48px`, `align-items: start` |
+| TOC | **First column, flush with the container's left edge** (i.e. the page's left edge). `position: sticky; top: 36px`. 224px wide, 13px type / 1.55 line-height, entries wrap at most twice. Resting color `--ink-tertiary`; the current section rises to `--ink` with a 2px `--accent` left bar. **No `overflow`, no `max-height`** — adding either produces the ugly scrollbar. A ~19-section TOC runs about 600px tall at 224px wide, which fits a normal viewport; it does not need to scroll |
+| Body column | The `1fr` track. Starts 48px right of the TOC and **runs to the container's right edge** — no centering, no symmetric dead space. Prose measure capped at `88ch` (about 860px, purely for readability), but **figures, tables, code blocks, and interactive components span the full column width** |
+| Top progress bar | 2px, `--accent`, `opacity: .38`, `position: fixed; top: 0`. **Fades to `opacity: 0` 1.2s after scrolling stops**, fades back in while scrolling. Never the most prominent thing on the page |
+| Theme toggle | A fixed button in the top-right; design it yourself. Toggling writes `<html data-theme>` + `localStorage`; a head script sets the theme before `<body>` renders so nothing flashes |
+| Narrow screens | ≤1100px: TOC collapses to a top-right "Contents" button plus a `position: fixed` overlay card (`max-height: 70vh`, scrollable, closes on click), body goes single-column full width; ≤640px: padding 20px, `h1` 25px, body 16px |
 
-**Type:** body `"Anthropic Serif", "Tiempos Text", "Source Serif 4", Georgia, "Noto Serif SC", serif` at 17px / 1.78 line-height; `h1` 30px / 1.3 / weight 600 with a `border-bottom: 3px double` for the bookish feel; `h2` 22px with 64px space above; `h3` 18px. Code `"Berkeley Mono", "JetBrains Mono", Consolas, monospace` at 14px / 1.65. All numerals `font-variant-numeric: tabular-nums`. Inline math stays in the serif italic of the body font — don't switch it to sans.
+**Type.** Headings and body use `"Anthropic Serif"`; UI text `"Anthropic Sans"`; code and numerals `"Anthropic Mono"`. If this machine has Anthropic font files, base64-inline them as `@font-face` (`font-display: swap`; one rule per variable font covering `font-weight: 300 800`). Otherwise fall back to `"Tiempos Text", "Source Serif 4", Georgia, "Noto Serif SC", serif`. Font files do not go in the repo, and not in the skill directory either.
 
-**Page order, top to bottom:** title block (your own title plus the info block: paper name, authors, venue and year, link, whether code is public, one-sentence core insight) → symbol palette → body. The TOC is not part of that order — it is a floating layer or an edge column, not a section of the page.
+Sizes: body 17px / 1.78; `h1` 31px / 1.28 / 700 with `letter-spacing: -.015em` and a `border-bottom: 3px double`; `h2` 22px / 1.38 / 700 with 64px space above; `h3` 18px / 700. Numerals `tabular-nums`. Inline math stays in the body serif's italic.
+
+**Page order, top to bottom:** title block (your own title plus the info block: paper name, authors, venue and year, link, whether code is public, one-sentence core insight) → symbol palette → body. The TOC is not part of that order — it is the first column's standing index, not a section of the page.
 
 ### 5.2 Notebook-style blocks (this is where the feel comes from)
 
 Use as needed; don't pile them up.
 
-- **Step chains.** When a derivation takes more than three steps on paper, put a monospace marker at the start of each step — `step one`, `step two`, `step three` — in `#6B6157`, 13px, slightly loose letter-spacing, with one line to the right saying what that step does. Connect steps with a left-aligned vertical rule, like numbered handwritten notes. Formulas that deserve their own line sit centered under the step.
-- **Marginalia.** Secondary but useful material — another reading of a symbol, where a number came from, a counterexample — goes in small type (14px, `#6B6157`) in the right margin rather than interrupting the body. Degrade to a footnote block on narrow screens.
-- **Note / Warning cards.** Backgrounds from the table, 3px accent left bar, 14.5px text. Note is for "easy to miss here"; Warning is for "the authors don't say — and here's the trap." A card may hold a simple line-art SVG (single-stroke, restrained); the art is an anchor and an atmosphere cue, never an argument.
+- **Step chains.** When a derivation takes more than three steps on paper, put a monospace marker at the start of each step — `step one`, `step two`, `step three` — in `--ink-tertiary`, 13px, slightly loose letter-spacing, with one line to the right saying what that step does. Connect steps with a left-aligned vertical rule, like numbered handwritten notes. Formulas that deserve their own line sit centered under the step.
+- **Marginalia.** Secondary but useful material — another reading of a symbol, where a number came from, a counterexample — goes in small type (14px, `--ink-tertiary`) in the right margin rather than interrupting the body. Degrade to a footnote block on narrow screens.
+- **Note / Warning cards.** `--surface-secondary` background for Note, a very light tint of the accent for Warning; 3px accent left bar, 14.5px text. Note is for "easy to miss here"; Warning is for "the authors don't say — and here's the trap." A card may hold a simple line-art SVG (single-stroke, restrained); the art is an anchor and an atmosphere cue, never an argument.
 - **Checkpoint / todo rows.** End a section with "if you actually understood this, you can now answer these three things," each preceded by an empty box (`☐`, plain text is fine). This is the reader's self-check, not the author's task list.
-- **Symbol pills.** When the body mentions a core symbol, render it as a pill like `torch.Tensor` — monospace 13px, `#F3EADB` background, 1px `#E8DDCB` border, 4px radius, 6px horizontal padding — tinted with that symbol's palette color. Hovering highlights every occurrence of the same symbol in the prose, the formulas, and the figures.
-- **Code blocks.** A top row with an `In [n]:`-style monospace label plus the filename, a 1px rule on the left, `#FFFCF7` background. No rainbow syntax highlighting — two colors only: comments `#8A7F73`, keywords and numbers `#B4552D`.
+- **Symbol pills.** When the body mentions a core symbol, render it as a pill like `torch.Tensor` — monospace 13px, `--surface-secondary` background, 1px `--line` border, 4px radius, 6px horizontal padding — with the text tinted that symbol's palette color. Hovering highlights every occurrence of the same symbol in the prose, the formulas, and the figures.
+- **Code blocks.** A top row with an `In [n]:`-style monospace label plus the filename, a 1px rule on the left, `--surface-code` background. No rainbow syntax highlighting — two colors only: comments `--ink-tertiary`, keywords and numbers `--accent-text`.
 
 ### 5.3 Animation and interaction design
 
@@ -426,10 +447,10 @@ Before delivering, walk this list:
 
 - Extract every inline `<script>` to a temp file and run `node --check` (where node exists), then delete the temp file.
 - If a browser tool is available, open the page, check the first screen and each component, and confirm the console is clean.
-- The first screen must not read as "a full empty TOC rail on the left, body text on the right." The first line of prose has to sit in the 720px centered column.
-- Look at both themes: on dark, do the toggle button, the current TOC item, Note/Warning cards, code blocks, and tables still read as distinct layers? Does the accent color keep enough contrast?
-- The theme survives a reload (localStorage works) and the reload does not flash white.
-- At rest the progress bar should be nearly invisible (transparent), fading in only while scrolling.
+- TOC flush left, body starting 48px to its right and running to the right edge; not a big empty left area, not a narrow centered column.
+- The TOC column has no scrollbar, and entries wrap at most twice.
+- Both themes: current TOC item, cards, code blocks, and tables stay legible on dark; accent contrast holds.
+- Theme survives a reload without flashing.
 
 ## 6. Writing long documents in segments
 
