@@ -76,9 +76,9 @@ The more you give it, the sharper the output: a paper with an appendix and an of
 
 ## Showcase
 
-The complete prompt, rendered as paginated A4 sheets for presentation and sharing:
+Top row: an interactive HTML x-ray (DINO), English and Chinese. Bottom row: the complete prompt, rendered as paginated A4 sheets for presentation and sharing.
 
-![A4 showcase page](./assets/showcase-a4.png)
+![X-ray output and A4 prompt sheets, English and Chinese](./assets/showcase-quad.png)
 
 ## Repository Layout
 
@@ -93,7 +93,11 @@ paper-xray/
 ├── LICENSE
 └── assets/
     ├── hero-banner.png             # Project banner
-    └── showcase-a4.png             # A4 showcase preview
+    ├── showcase-quad.png           # 2×2 showcase (x-ray + prompt, EN + ZH)
+    ├── dino-en.png                 # HTML x-ray preview, English
+    ├── dino-zh.png                 # HTML x-ray preview, Chinese
+    ├── showcase-en.png             # A4 prompt preview, English
+    └── showcase-a4.png             # A4 prompt preview, Chinese
 ```
 
 ## Star History

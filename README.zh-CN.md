@@ -76,9 +76,9 @@ Windows 上的 Skills 目录是 `C:\Users\<你>\.claude\skills\paper-xray`。
 
 ## 展示
 
-完整提示词的 A4 分页渲染版，用于展示和分享：
+上排是交互式 HTML 解读成品（DINO，中英各一份），下排是完整提示词的 A4 分页渲染版，用于展示和分享。
 
-![A4 展示页](./assets/showcase-a4.png)
+![解读成品与 A4 提示词页，中英对照](./assets/showcase-quad.png)
 
 ## 仓库结构
 
@@ -93,7 +93,11 @@ paper-xray/
 ├── LICENSE
 └── assets/
     ├── hero-banner.png             # 项目横幅
-    └── showcase-a4.png             # A4 展示页预览
+    ├── showcase-quad.png           # 2×2 展示图（解读成品 + 提示词，中英）
+    ├── dino-en.png                 # HTML 解读预览，英文
+    ├── dino-zh.png                 # HTML 解读预览，中文
+    ├── showcase-en.png             # A4 提示词预览，英文
+    └── showcase-a4.png             # A4 提示词预览，中文
 ```
 
 ## Star History
