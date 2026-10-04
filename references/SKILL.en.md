@@ -349,30 +349,34 @@ Produce **one** self-contained `<short-name>.html`. No requirement is relaxed: i
 
 ### 5.1 Layout spec (use these numbers; don't redesign them)
 
-The page imitates a well-typeset technical book, not a dashboard.
+The model is a distill.pub-style long read: **the body text is the only protagonist**, and every supporting element steps aside — pushed to the margin, dimmed, or hidden. Not a dashboard, not a docs site with a permanent left rail plus a content pane. One test decides it: the reader's eye lands on the first line of prose, not on a TOC, a progress bar, or any other piece of chrome.
+
+Write every color as a CSS variable on `:root` and override the same set for the dark theme (see 5.2). Never hard-code a hex value in the body.
+
+| Item | Light | Dark |
+|---|---|---|
+| Page background | `#FAF6EE` warm ivory | `#16130F` warm near-black |
+| Card / code background | `#FFFCF7` | `#1F1B16` |
+| Body ink | `#262220` warm black | `#E8E0D4` |
+| Secondary text | `#6B6157` | `#9C9086` |
+| Rules | `#E8DDCB` | `#332C24` |
+| Accent | `#B4552D` terracotta | `#D97757` (lightened for contrast on dark) |
+| Note / Warning background | `#F3EADB` / `#F7E6DC` | `#2A231B` / `#33231C` |
 
 | Item | Value |
 |---|---|
-| Page background | `#FAF6EE` (warm ivory) |
-| Card / code background | `#FFFCF7` |
-| Body ink | `#262220` (warm black, never pure black) |
-| Secondary text | `#6B6157` |
-| Rules | `#E8DDCB` |
-| Accent | `#B4552D` (terracotta; current step, highlight, progress bar) |
-| Note background | `#F3EADB` |
-| Warning background | `#F7E6DC` |
-| Container | `max-width: 1160px`, centered |
-| Grid | `grid-template-columns: 232px 1fr`, `gap: 56px` |
-| Body measure | `680px` (`max-width`, not fixed) |
-| Wide figures/tables | may run to `920px`, bleeding left into the gap beside the TOC column |
-| TOC | `position: sticky; top: 32px; max-height: calc(100vh - 64px); overflow-y: auto` |
-| TOC items | 13px, line-height 1.5; current section gets a 2px `#B4552D` left bar and `#262220` text |
-| Top progress bar | 2px, `#B4552D`, `position: fixed; top: 0`, width tracks scroll |
-| Breakpoints | ≤1080px: TOC collapses into a top `<details>`; ≤760px: container padding drops to 20px and wide figures stop bleeding |
+| Container | `max-width: 1120px`, centered, 32px side padding |
+| Grid | **single column by default**: body measure `max-width: 720px`, `margin-inline: auto` |
+| Margin column | Only at viewports ≥1400px: `grid-template-columns: 148px minmax(0, 720px)`, margin column left, body sitting right of center. Below 1400px everything in the margin degrades into the body |
+| Wide figures/tables | may run to `960px`, bleeding **symmetrically** around the body measure, never dumped to one side |
+| Top progress bar | 2px, `#B4552D`, `opacity: .38`, `position: fixed; top: 0`. **Fades to `opacity: 0` 1.2s after scrolling stops**, fades back in while scrolling. It answers "how far in am I" and is never the most prominent thing on the page |
+| TOC | **not a permanent rail.** Below 1400px it does not appear on the page at all — a small "Contents" button in the top-right opens a floating `position: fixed` card (`max-height: 70vh`, scrollable) that closes on click. At ≥1400px: a 148px left column, `position: sticky; top: 40px`, 12px type, 1.55 line-height, resting color one notch below `--muted` (`opacity: .72`); only the current section rises to `--ink` with a 2px `--accent` left bar. The TOC column never gets a background or a border |
+| Theme toggle | A 32px circular button `position: fixed` in the top-right, ☀/☾ (text glyph or inline SVG). Toggling sets `data-theme` on `<html>` and writes `localStorage.setItem('theme', …)`. A head script must read localStorage and `prefers-color-scheme` **before `<body>` renders** to avoid a white flash. If `localStorage` is unavailable (some browsers under `file://`), fall back silently to the system preference |
+| Breakpoints | ≤960px: wide figures and tables stop bleeding and pull into the body measure; ≤640px: container padding 20px, `h1` 25px, body 16px |
 
 **Type:** body `"Anthropic Serif", "Tiempos Text", "Source Serif 4", Georgia, "Noto Serif SC", serif` at 17px / 1.78 line-height; `h1` 30px / 1.3 / weight 600 with a `border-bottom: 3px double` for the bookish feel; `h2` 22px with 64px space above; `h3` 18px. Code `"Berkeley Mono", "JetBrains Mono", Consolas, monospace` at 14px / 1.65. All numerals `font-variant-numeric: tabular-nums`. Inline math stays in the serif italic of the body font — don't switch it to sans.
 
-**Page order, top to bottom:** title block (your own title plus the info block: paper name, authors, venue and year, link, whether code is public, one-sentence core insight) → symbol palette → TOC appears in the left column, starting from the first `h2` → body.
+**Page order, top to bottom:** title block (your own title plus the info block: paper name, authors, venue and year, link, whether code is public, one-sentence core insight) → symbol palette → body. The TOC is not part of that order — it is a floating layer or an edge column, not a section of the page.
 
 ### 5.2 Notebook-style blocks (this is where the feel comes from)
 
@@ -416,7 +420,16 @@ How the animation works:
 
 One file, vanilla JS plus SVG/Canvas, no framework, no build step. The only external dependency is KaTeX from CDN (css, js, auto-render); offline, formulas degrade to LaTeX source and the interactions still work. Embed paper figures as base64 (if the total exceeds roughly 20 MB, switch to `file:///` absolute paths). Where only a static figure is needed, matplotlib to PNG and embed it as before, keeping the script in the output directory.
 
-Before delivering: extract every inline `<script>` to a temp file and run `node --check` (where node exists), then delete the temp file. If a browser tool is available, open the page, check the first screen and each component, and confirm the console is clean.
+The theme toggle is a default, not an option. Put a synchronous script in `<head>` that reads `localStorage.theme` (falling back to `prefers-color-scheme`) and writes the result to `<html data-theme>` before `<body>` renders, and pin the toggle button in the top-right corner. Both halves matter — doing this inside `DOMContentLoaded`, or just before `</body>`, still flashes the light theme first.
+
+Before delivering, walk this list:
+
+- Extract every inline `<script>` to a temp file and run `node --check` (where node exists), then delete the temp file.
+- If a browser tool is available, open the page, check the first screen and each component, and confirm the console is clean.
+- The first screen must not read as "a full empty TOC rail on the left, body text on the right." The first line of prose has to sit in the 720px centered column.
+- Look at both themes: on dark, do the toggle button, the current TOC item, Note/Warning cards, code blocks, and tables still read as distinct layers? Does the accent color keep enough contrast?
+- The theme survives a reload (localStorage works) and the reload does not flash white.
+- At rest the progress bar should be nearly invisible (transparent), fading in only while scrolling.
 
 ## 6. Writing long documents in segments
 
