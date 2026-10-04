@@ -78,7 +78,7 @@ Windows 上的 Skills 目录是 `C:\Users\<你>\.claude\skills\paper-xray`。
 
 上排是交互式 HTML 解读成品（DINO，中英各一份），下排是完整提示词的 A4 分页渲染版，用于展示和分享。
 
-![交互式 HTML 解读成品与 A4 分页提示词，中英对照](./assets/showcase-grid.zh-CN.png)
+![交互式 HTML 解读成品与 A4 分页提示词，中英对照](./assets/showcase-grid.zh-CN.jpg)
 
 ## 仓库结构
 
@@ -93,8 +93,8 @@ paper-xray/
 ├── LICENSE
 └── assets/
     ├── hero-banner.png             # 项目横幅
-    ├── showcase-grid.png           # 2×2 展示图，英文图注
-    ├── showcase-grid.zh-CN.png     # 2×2 展示图，中文图注
+    ├── showcase-grid.jpg           # 2×2 展示图，英文图注
+    ├── showcase-grid.zh-CN.jpg     # 2×2 展示图，中文图注
     ├── dino-en.png                 # HTML 解读预览，英文
     ├── dino-zh.png                 # HTML 解读预览，中文
     ├── showcase-en.png             # A4 提示词预览，英文
@@ -105,7 +105,11 @@ paper-xray/
 
 如果它帮你省下了一次重读，一个 star 能让更多人找到它。
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Wang-auspicious/paper-xray&type=Date)](https://star-history.com/#Wang-auspicious/paper-xray&Date)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Wang-auspicious/paper-xray&type=Date&theme=dark">
+  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Wang-auspicious/paper-xray&type=Date&theme=light">
+  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Wang-auspicious/paper-xray&type=Date&theme=light">
+</picture>
 
 ## 协议
 

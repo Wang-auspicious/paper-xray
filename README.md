@@ -78,7 +78,7 @@ The more you give it, the sharper the output: a paper with an appendix and an of
 
 Top row: an interactive HTML x-ray (DINO), English and Chinese. Bottom row: the complete prompt, rendered as paginated A4 sheets for presentation and sharing.
 
-![Interactive HTML x-ray output and the paginated A4 prompt, English and Chinese](./assets/showcase-grid.png)
+![Interactive HTML x-ray output and the paginated A4 prompt, English and Chinese](./assets/showcase-grid.jpg)
 
 ## Repository Layout
 
@@ -93,8 +93,8 @@ paper-xray/
 ├── LICENSE
 └── assets/
     ├── hero-banner.png             # Project banner
-    ├── showcase-grid.png           # 2×2 showcase, English captions
-    ├── showcase-grid.zh-CN.png     # 2×2 showcase, Chinese captions
+    ├── showcase-grid.jpg           # 2×2 showcase, English captions
+    ├── showcase-grid.zh-CN.jpg     # 2×2 showcase, Chinese captions
     ├── dino-en.png                 # HTML x-ray preview, English
     ├── dino-zh.png                 # HTML x-ray preview, Chinese
     ├── showcase-en.png             # A4 prompt preview, English
@@ -105,7 +105,11 @@ paper-xray/
 
 If this saved you a reread, a star helps other people find it.
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Wang-auspicious/paper-xray&type=Date)](https://star-history.com/#Wang-auspicious/paper-xray&Date)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Wang-auspicious/paper-xray&type=Date&theme=dark">
+  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Wang-auspicious/paper-xray&type=Date&theme=light">
+  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Wang-auspicious/paper-xray&type=Date&theme=light">
+</picture>
 
 ## License
 
