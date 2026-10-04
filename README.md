@@ -78,7 +78,7 @@ The more you give it, the sharper the output: a paper with an appendix and an of
 
 Top row: an interactive HTML x-ray (DINO), English and Chinese. Bottom row: the complete prompt, rendered as paginated A4 sheets for presentation and sharing.
 
-![X-ray output and A4 prompt sheets, English and Chinese](./assets/showcase-quad.png)
+![Interactive HTML x-ray output and the paginated A4 prompt, English and Chinese](./assets/showcase-quad.png)
 
 ## Repository Layout
 
@@ -93,7 +93,8 @@ paper-xray/
 ├── LICENSE
 └── assets/
     ├── hero-banner.png             # Project banner
-    ├── showcase-quad.png           # 2×2 showcase (x-ray + prompt, EN + ZH)
+    ├── showcase-quad.png           # 2×2 showcase, English captions
+    ├── showcase-quad.zh-CN.png     # 2×2 showcase, Chinese captions
     ├── dino-en.png                 # HTML x-ray preview, English
     ├── dino-zh.png                 # HTML x-ray preview, Chinese
     ├── showcase-en.png             # A4 prompt preview, English
