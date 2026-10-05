@@ -110,6 +110,7 @@ paper-xray/
 ├── LICENSE
 └── assets/
     ├── hero-banner.png             # 项目横幅
+    ├── dino-screens-4up.png        # 改版规范后的四屏截图
     ├── showcase-grid.jpg           # 2×2 展示图，英文图注
     ├── showcase-grid.zh-CN.jpg     # 2×2 展示图，中文图注
     ├── dino-en.png                 # HTML 解读预览，英文

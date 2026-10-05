@@ -110,6 +110,7 @@ paper-xray/
 ├── LICENSE
 └── assets/
     ├── hero-banner.png             # Project banner
+    ├── dino-screens-4up.png        # Four screens, revised figure spec
     ├── showcase-grid.jpg           # 2×2 showcase, English captions
     ├── showcase-grid.zh-CN.jpg     # 2×2 showcase, Chinese captions
     ├── dino-en.png                 # HTML x-ray preview, English
