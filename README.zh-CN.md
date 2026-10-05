@@ -80,6 +80,14 @@ Windows 上的 Skills 目录是 `C:\Users\<你>\.claude\skills\paper-xray`。
 
 ![交互式 HTML 解读成品与 A4 分页提示词，中英对照](./assets/showcase-grid.zh-CN.jpg)
 
+## 在线 demo
+
+下面这些直接用浏览器打开就行——单文件、不用构建、不用起服务。
+
+- [`demos/dino-xray.html`](./demos/dino-xray.html) — DINO（ICCV 2021）的完整中文解读，就是上面展示图里那份：六个交互图（学生/老师逐步走一遍、塌缩研究的温度滑块、动量滑块、点选损失配对）、消融表和复现清单。1600×900 下约 19 屏。
+- [`references/figure-kit.html`](./references/figure-kit.html) — 图形语言本身：角色配色、方框/连线/容器的尺寸规则、一张编码器-解码器架构图、三张小图，以及 `FK.lint()` 自检。把 `FIGKIT TOKENS` 和 `FIGKIT JS` 两段整块复制走即可。
+- `demos/hispf-32-node-demo.html`、`demos/asitpofborscht-style-lab.html` — 同一套图形语言的早期试验。
+
 ## 仓库结构
 
 ```text
@@ -87,7 +95,12 @@ paper-xray/
 ├── SKILL.md                        # Skill 本体：中文规格 + 交付规则（15 节，一字未删）
 ├── references/
 │   ├── SKILL.en.md                 # 英文规格，按英语技术写作习惯重写
+│   ├── figure-kit.html             # 图形工具包：角色配色、排版规则、可复制的 CSS + JS、FK.lint()
 │   └── calibration-log.md          # 使用中积累的偏好记录（初始为空）
+├── demos/                          # 成品与图形语言试验（可直接用浏览器打开）
+│   ├── dino-xray.html              # DINO 完整解读，中文，六个交互图
+│   ├── hispf-32-node-demo.html     # 早期图形语言试验
+│   └── asitpofborscht-style-lab.html
 ├── README.md                       # English documentation
 ├── README.zh-CN.md                 # 本文件
 ├── LICENSE

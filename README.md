@@ -80,6 +80,14 @@ Top row: an interactive HTML x-ray (DINO), English and Chinese. Bottom row: the 
 
 ![Interactive HTML x-ray output and the paginated A4 prompt, English and Chinese](./assets/showcase-grid.jpg)
 
+## Live demos
+
+Open these directly in a browser — single files, no build, no server.
+
+- [`demos/dino-xray.html`](./demos/dino-xray.html) — the full Chinese x-ray of **DINO** (ICCV 2021), the same document as the showcase above: six interactive figures (a step-through of student/teacher, a temperature slider on the collapse study, an EMA slider, click-to-select loss pairings), the ablation table, and the reproduction checklist. ~19 screens at 1600×900.
+- [`demos/figure-kit.html`](./references/figure-kit.html) — the figure language on its own: role colors, box/wire/container rules, one encoder–decoder architecture, three small figures, and the `FK.lint()` self-check. Copy the `FIGKIT TOKENS` and `FIGKIT JS` blocks into your own page.
+- `demos/hispf-32-node-demo.html`, `demos/asitpofborscht-style-lab.html` — earlier studies from the same figure language.
+
 ## Repository Layout
 
 ```text
@@ -87,7 +95,12 @@ paper-xray/
 ├── SKILL.md                        # The skill: Chinese specification + delivery rules (verbatim, 15 sections)
 ├── references/
 │   ├── SKILL.en.md                 # English specification, written as native technical prose
+│   ├── figure-kit.html             # Figure kit: role colors, layout rules, copy-paste CSS + JS, FK.lint()
 │   └── calibration-log.md          # Preferences accumulated in use (starts empty)
+├── demos/                          # Finished outputs and figure-language studies (open directly in a browser)
+│   ├── dino-xray.html              # Full DINO x-ray, Chinese, six interactive figures
+│   ├── hispf-32-node-demo.html     # Earlier figure-language study
+│   └── asitpofborscht-style-lab.html
 ├── README.md                       # This file
 ├── README.zh-CN.md                 # 中文文档
 ├── LICENSE

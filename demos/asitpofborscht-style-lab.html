@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Figure language / visual study</title>
+<style>
+:root{
+  --bg:#0d1117;
+  --fg:#e8e1d6;
+  --muted:#aaa094;
+  --faint:#756d63;
+  --rule:#4a4844;
+  --soft:#22272f;
+  --blue:#4fb3e4;
+  --yellow:#e5b238;
+  --green:#52c9a4;
+  --pink:#d184b7;
+  --red:#e3796f;
+  --serif:"New Computer Modern","CMU Serif",Georgia,"Times New Roman",serif;
+  --mono:"New Computer Modern Mono","CMU Typewriter Text","SFMono-Regular",Consolas,monospace;
+}
+html[data-theme="warm"]{
+  --bg:#f3efe6;
+  --fg:#2c2823;
+  --muted:#5d554c;
+  --faint:#8d8378;
+  --rule:#aaa095;
+  --soft:#e4ded2;
+  --blue:#0072b2;
+  --yellow:#9d6d00;
+  --green:#087f63;
+  --pink:#9c4f82;
+  --red:#ad473f;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--fg)}
+body{font-family:var(--serif);font-size:17px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button{font:inherit}
+.shell{max-width:none;margin:0;padding:0 32px 100px;display:grid;grid-template-columns:190px minmax(0,1fr);column-gap:32px}
+.chrome{
+  grid-column:1 / -1;position:sticky;top:0;z-index:4;height:46px;
+  display:flex;align-items:center;gap:18px;
+  border-bottom:1px solid var(--rule);background:color-mix(in srgb,var(--bg) 94%,transparent);
+  color:var(--muted);font:12px var(--mono);backdrop-filter:blur(8px)
+}
+.chrome button{
+  padding:2px 0;border:0;background:none;color:var(--muted);cursor:pointer;
+  line-height:1;font-size:15px
+}
+.chrome button:hover,.chrome button:focus-visible{color:var(--fg);outline:none}
+.chrome-title{flex:1;text-align:center;font-family:var(--serif);font-size:14px;letter-spacing:.06em;color:var(--muted)}
+.sidebar{grid-column:1;grid-row:2;position:sticky;top:70px;align-self:start;width:190px;padding-top:34px;color:var(--muted);font:11px/1.7 var(--mono);transition:opacity .2s ease,visibility .2s ease}
+.sidebar-kicker{margin-bottom:13px;color:var(--faint);letter-spacing:.14em;text-transform:uppercase}
+.sidebar nav{display:grid;gap:6px;border-left:1px solid var(--rule);padding-left:13px}
+.sidebar a{color:var(--muted);text-decoration:none}
+.sidebar a:hover,.sidebar a:focus-visible{color:var(--fg);outline:none}
+.reading{grid-column:2;grid-row:2;min-width:0;width:100%;margin:0;padding-top:34px}
+body.nav-hidden .shell{grid-template-columns:0 minmax(0,1fr);column-gap:0}
+body.nav-hidden .sidebar{visibility:hidden;opacity:0;pointer-events:none}
+.kicker{font:11px var(--mono);letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.rule-head{display:flex;align-items:center;gap:12px;margin:8px 0 24px}
+.rule-head::after{content:"";height:1px;flex:1;background:var(--rule)}
+.figure-block{margin:34px 0 46px}
+.figure-head{display:flex;align-items:baseline;gap:12px;margin-bottom:12px;font:11px var(--mono);color:var(--muted);letter-spacing:.04em}
+.figure-head strong{color:var(--fg);font-weight:400}
+.dual{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:center}
+.visual{min-width:0}
+.visual svg{display:block;width:100%;height:auto;overflow:visible}
+.caption{margin-top:8px;color:var(--muted);font-size:13px;font-style:italic}
+.caption .mono{font-family:var(--mono);font-style:normal;font-size:11px}
+.note-strip{
+  display:grid;grid-template-columns:20px 1fr;gap:10px;
+  max-width:760px;margin:24px auto 42px;padding:8px 0 8px 13px;
+  border-left:3px solid var(--blue);color:var(--muted);font-size:14px
+}
+.note-mark{color:var(--blue);font-family:var(--mono)}
+.circuit{margin-top:16px}
+.circuit svg{display:block;width:100%;height:auto}
+.code-strip{
+  margin:24px auto 0;padding:10px 12px;border-left:1px solid var(--rule);
+  color:var(--muted);font:12px/1.6 var(--mono);white-space:pre-wrap
+}
+.code-strip .blue{color:var(--blue)}.code-strip .pink{color:var(--pink)}.code-strip .green{color:var(--green)}.code-strip .yellow{color:var(--yellow)}
+.svg-label{font-family:var(--serif);font-size:12px;fill:var(--fg)}
+.svg-mono{font-family:var(--mono);font-size:10px;fill:var(--muted);font-variant-numeric:tabular-nums lining-nums}
+.svg-small{font-family:var(--serif);font-size:10px;fill:var(--muted)}
+.svg-faint{fill:var(--faint)}
+.svg-rule{stroke:var(--rule);stroke-width:1;fill:none}
+.svg-soft{stroke:var(--faint);stroke-width:1;fill:none;opacity:.65}
+.svg-flow{stroke:var(--muted);stroke-width:1.25;fill:none;marker-end:url(#arrow)}
+.svg-flow.active{stroke:var(--fg);stroke-width:2;stroke-dasharray:6 7}
+.svg-point{fill:var(--bg);stroke:var(--muted);stroke-width:1.6}
+.svg-point.active{fill:var(--fg);stroke:var(--fg);filter:url(#glow)}
+.svg-point.blue{stroke:var(--blue)}.svg-point.green{stroke:var(--green)}.svg-point.yellow{stroke:var(--yellow)}.svg-point.pink{stroke:var(--pink)}
+.svg-point.blue.active{fill:var(--blue)}.svg-point.green.active{fill:var(--green)}.svg-point.yellow.active{fill:var(--yellow)}.svg-point.pink.active{fill:var(--pink)}
+.svg-box{fill:none;stroke-width:1.8}
+.svg-box.pink{stroke:var(--pink)}.svg-box.green{stroke:var(--green)}.svg-box.yellow{stroke:var(--yellow)}
+.heat-cell{stroke:var(--rule);stroke-width:1;fill:var(--soft)}
+.heat-cell.active{stroke:var(--fg);stroke-width:2}
+.axis{stroke:var(--faint);stroke-width:1}
+.plot-line{fill:none;stroke:var(--green);stroke-width:2}
+.plot-area{fill:var(--green);opacity:.12}
+.plot-point{fill:var(--bg);stroke:var(--green);stroke-width:1.8}
+.plot-point.active{fill:var(--green);stroke:var(--fg)}
+.operator.active .svg-box{stroke:var(--fg);filter:url(#glow)}
+.operator.active .svg-label{fill:var(--fg)}
+.legend-line{display:flex;flex-wrap:wrap;gap:16px;margin-top:8px;color:var(--muted);font:10px var(--mono)}
+.legend-line span{display:inline-flex;align-items:center;gap:5px}
+.legend-dot{width:7px;height:7px;border-radius:50%;display:inline-block}
+@media (max-width:700px){
+  .shell{display:block;padding:0 16px 70px}
+  .sidebar{position:static;width:auto;padding-top:22px;padding-bottom:8px}
+  .reading{padding-top:22px}
+  .dual{grid-template-columns:1fr;gap:20px}
+  .chrome-title{font-size:12px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="chrome">
+    <button id="menu" type="button" aria-label="toggle directory" aria-controls="sidebar" aria-expanded="true">☰</button>
+    <button id="theme" type="button" aria-label="toggle theme">◐</button>
+    <span class="chrome-title">A SMALL VISUAL STUDY OF REPRESENTATION</span>
+  </header>
+
+  <aside id="sidebar" class="sidebar" aria-label="目录">
+    <div class="sidebar-kicker">part II / visual notes</div>
+    <nav>
+      <a href="#figure-joint">1. joint state</a>
+      <a href="#figure-circuit">2. circuit</a>
+      <a href="#figure-loss">3. paths / loss</a>
+    </nav>
+  </aside>
+
+  <main class="reading">
+    <div class="kicker">synthetic chapter / neural systems</div>
+    <div class="rule-head"><span>the same quantity, seen three ways</span></div>
+
+    <section id="figure-joint" class="figure-block" aria-label="dual representation figure">
+      <div class="figure-head"><strong>1.2.3</strong><span>joint state → matrix state</span></div>
+      <div class="dual">
+        <div class="visual">
+          <svg id="spaceFigure" viewBox="0 0 430 260" role="img" aria-label="state space diagram">
+            <defs><filter id="glow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="3" result="b"></feGaussianBlur><feMerge><feMergeNode in="b"></feMergeNode><feMergeNode in="SourceGraphic"></feMerge></feMerge></filter></defs>
+            <line class="svg-rule" x1="58" y1="210" x2="365" y2="210"></line>
+            <line class="svg-rule" x1="58" y1="210" x2="58" y2="49"></line>
+            <line class="svg-soft" x1="58" y1="210" x2="140" y2="168"></line>
+            <line class="svg-soft" x1="58" y1="180" x2="365" y2="180"></line>
+            <line class="svg-soft" x1="58" y1="150" x2="365" y2="150"></line>
+            <line class="svg-soft" x1="58" y1="120" x2="365" y2="120"></line>
+            <line class="svg-soft" x1="58" y1="90" x2="365" y2="90"></line>
+            <text class="svg-mono" x="58" y="235">xᵢ</text><text class="svg-mono" x="360" y="226">yⱼ</text>
+            <text class="svg-label" x="65" y="30" fill="var(--blue)">input state</text>
+            <text class="svg-label" x="280" y="30" fill="var(--yellow)">output state</text>
+            <g id="spaceEdges"></g><g id="spacePoints"></g>
+            <text class="svg-small" x="150" y="250">p(yⱼ | xᵢ)</text>
+          </svg>
+        </div>
+        <div class="visual">
+          <svg id="matrixFigure" viewBox="0 0 430 260" role="img" aria-label="probability matrix">
+            <text class="svg-mono" x="70" y="25">yⱼ →</text><text class="svg-mono" x="19" y="126" transform="rotate(-90 19 126)">xᵢ →</text>
+            <g id="matrixCells"></g><g id="matrixLabels"></g>
+            <line class="svg-flow" x1="310" y1="214" x2="382" y2="214"></line>
+            <text class="svg-mono" x="315" y="232">Σⱼ pᵢⱼ</text>
+          </svg>
+        </div>
+      </div>
+      <div class="legend-line">
+        <span><i class="legend-dot" style="background:var(--blue)"></i>x / input</span>
+        <span><i class="legend-dot" style="background:var(--yellow)"></i>y / output</span>
+        <span><i class="legend-dot" style="background:var(--green)"></i>selected mass</span>
+      </div>
+      <div class="caption"><span class="mono">Figure 1.2.3</span> · a distribution keeps its geometry when the representation changes.</div>
+    </section>
+
+    <div class="note-strip">
+      <span class="note-mark">ⓘ</span>
+      <span>Color is a second notation: blue enters, yellow leaves, green transforms. The symbols keep their color when the picture changes shape.</span>
+    </div>
+
+    <section id="figure-circuit" class="figure-block" aria-label="operator circuit figure">
+      <div class="figure-head"><strong>2.1.1</strong><span>the same function as a circuit</span></div>
+      <div class="circuit">
+        <svg id="circuitFigure" viewBox="0 0 920 178" role="img" aria-label="operator circuit">
+          <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="var(--muted)"></path></marker></defs>
+          <line class="svg-flow" x1="50" y1="78" x2="160" y2="78"></line>
+          <line class="svg-flow" x1="260" y1="78" x2="345" y2="78"></line>
+          <line class="svg-flow" x1="405" y1="78" x2="485" y2="78"></line>
+          <line class="svg-flow" x1="585" y1="78" x2="675" y2="78"></line>
+          <line class="svg-flow" x1="770" y1="78" x2="865" y2="78"></line>
+          <g class="operator" data-op="input"><circle class="svg-point blue" cx="34" cy="78" r="16"></circle><text class="svg-label" x="28" y="83">x</text></g>
+          <g class="operator" data-op="linear-1"><rect class="svg-box pink" x="160" y="52" width="100" height="52"></rect><text class="svg-label" x="184" y="84">Linear</text></g>
+          <g class="operator" data-op="relu"><path class="svg-box green" d="M345 52 H370 A26 26 0 0 1 370 104 H345 Z"></path><text class="svg-label" x="352" y="84">σ</text></g>
+          <g class="operator" data-op="hidden"><circle class="svg-point green" cx="385" cy="78" r="16"></circle><text class="svg-label" x="379" y="83">h</text></g>
+          <g class="operator" data-op="linear-2"><rect class="svg-box pink" x="485" y="52" width="100" height="52"></rect><text class="svg-label" x="509" y="84">Linear</text></g>
+          <g class="operator" data-op="softmax"><path class="svg-box green" d="M675 52 H744 Q770 52 770 78 Q770 104 744 104 H675 Z"></path><text class="svg-label" x="695" y="84">softmax</text></g>
+          <g class="operator" data-op="output"><circle class="svg-point yellow" cx="882" cy="78" r="16"></circle><text class="svg-label" x="877" y="83">a</text></g>
+          <text class="svg-mono" x="20" y="133">R⁵</text><text class="svg-mono" x="187" y="133">R⁸</text><text class="svg-mono" x="356" y="133">R⁸</text><text class="svg-mono" x="505" y="133">R⁵</text><text class="svg-mono" x="694" y="133">Δ⁴</text>
+          <text class="svg-label" x="100" y="35" fill="var(--pink)">W¹</text><text class="svg-label" x="429" y="35" fill="var(--pink)">W²</text><text class="svg-label" x="810" y="35" fill="var(--yellow)">a ∈ Δ⁴</text>
+          <text class="svg-small" x="22" y="166">x ↦ W² σ(W¹x + b¹) + b² ↦ a</text>
+        </svg>
+      </div>
+      <div class="caption"><span class="mono">Figure 2.1.1</span> · composition becomes readable when every operator has one shape and one color.</div>
+    </section>
+
+    <section id="figure-loss" class="figure-block" aria-label="dual graph figure">
+      <div class="figure-head"><strong>2.2.4</strong><span>weights as paths, error as movement</span></div>
+      <div class="dual">
+        <div class="visual">
+          <svg id="graphFigure" viewBox="0 0 430 260" role="img" aria-label="weighted graph">
+            <text class="svg-mono" x="40" y="25">φ(x) ∈ R⁵</text><text class="svg-mono" x="295" y="25">w ∈ R⁵</text>
+            <g id="graphEdges"></g><g id="graphNodes"></g>
+            <text class="svg-small" x="42" y="245">Σⱼ wⱼ φⱼ(x) + b</text>
+          </svg>
+        </div>
+        <div class="visual">
+          <svg id="plotFigure" viewBox="0 0 430 260" role="img" aria-label="loss curve">
+            <line class="axis" x1="42" y1="215" x2="405" y2="215"></line><line class="axis" x1="42" y1="215" x2="42" y2="40"></line>
+            <text class="svg-mono" x="385" y="236">t</text><text class="svg-mono" x="14" y="45">L</text>
+            <path id="plotArea" class="plot-area"></path><path id="plotLine" class="plot-line"></path><g id="plotPoints"></g>
+            <text class="svg-small" x="42" y="250">one step at a time</text>
+          </svg>
+        </div>
+      </div>
+      <div class="caption"><span class="mono">Figure 2.2.4</span> · one diagram explains the sum; the other explains why the sum changes.</div>
+    </section>
+
+    <div class="code-strip"><span class="blue">x</span> = <span class="blue">input</span>   <span class="pink">W</span> = <span class="pink">parameter</span>   <span class="green">σ</span> = <span class="green">nonlinearity</span>   <span class="yellow">a</span> = <span class="yellow">distribution</span></div>
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var NS="http://www.w3.org/2000/svg";
+  var state={i:3,j:4,op:"input",plot:3};
+  var matrix=[
+    [.01,.15,.01,.02,.01],
+    [.01,.01,.16,.01,.01],
+    [.01,.01,.01,.16,.01],
+    [.01,.01,.01,.01,.16],
+    [.14,.02,.01,.02,.01]
+  ];
+  var graphY=[56,88,120,152,184], graphX=[92,342];
+  var loss=[.92,.74,.61,.49,.43,.38,.34,.31];
+  function el(tag,attrs,parent){
+    var n=document.createElementNS(NS,tag);
+    Object.keys(attrs||{}).forEach(function(k){n.setAttribute(k,attrs[k]);});
+    if(parent){parent.appendChild(n);}
+    return n;
+  }
+  function txt(x,y,value,cls,parent){
+    var n=el("text",{x:x,y:y,class:cls||""},parent);n.textContent=value;return n;
+  }
+  function renderSpace(){
+    var edges=document.getElementById("spaceEdges"), points=document.getElementById("spacePoints");
+    edges.innerHTML="";points.innerHTML="";
+    for(var i=0;i<5;i++){
+      for(var j=0;j<5;j++){
+        var x1=85+i*26,y1=178-i*6,x2=300+j*13,y2=178-j*23;
+        var active=(i===state.i&&j===state.j);
+        el("line",{x1:x1,y1:y1,x2:x2,y2:y2,class:"svg-flow "+(active?"active":"")},edges);
+      }
+    }
+    for(var k=0;k<5;k++){
+      var a=el("circle",{cx:85,cy:178-k*6,r:11,class:"svg-point blue "+(k===state.i?"active":"")});points.appendChild(a);
+      var b=el("circle",{cx:300,cy:178-k*23,r:11,class:"svg-point yellow "+(k===state.j?"active":"")});points.appendChild(b);
+    }
+  }
+  function renderMatrix(){
+    var cells=document.getElementById("matrixCells"), labels=document.getElementById("matrixLabels");
+    cells.innerHTML="";labels.innerHTML="";
+    for(var j=0;j<5;j++){txt(84+j*40,49,String(j),"svg-mono",labels);}
+    for(var i=0;i<5;i++){
+      txt(40,77+i*28,String(i),"svg-mono",labels);
+      for(var k=0;k<5;k++){
+        var v=matrix[i][k], alpha=.12+v/.16*.72;
+        var rect=el("rect",{x:68+k*40,y:58+i*28,width:36,height:25,class:"heat-cell "+(i===state.i&&k===state.j?"active":"")});
+        rect.style.fill="color-mix(in srgb, var(--green) "+(alpha*100)+"%, var(--bg))";cells.appendChild(rect);
+        txt(80+k*40,75+i*28,v.toFixed(2),"svg-mono",cells);
+      }
+    }
+  }
+  function renderGraph(){
+    var edges=document.getElementById("graphEdges"), nodes=document.getElementById("graphNodes");
+    edges.innerHTML="";nodes.innerHTML="";
+    for(var i=0;i<5;i++){
+      var active=i===state.i;
+      el("line",{x1:graphX[0]+12,y1:graphY[i],x2:graphX[1]-12,y2:120,class:"svg-flow "+(active?"active":"")},edges);
+      txt(112,graphY[i]+4,"w"+(i+1),"svg-mono",edges);
+      var n=el("circle",{cx:graphX[0],cy:graphY[i],r:12,class:"svg-point blue "+(active?"active":"")});nodes.appendChild(n);
+    }
+    var sum=el("circle",{cx:graphX[1],cy:120,r:28,class:"svg-point green active"});nodes.appendChild(sum);
+    txt(328,125,"Σ","svg-label",nodes);
+  }
+  function renderPlot(){
+    var path="",area="M 42 215";
+    loss.forEach(function(v,i){
+      var x=42+i*49,y=205-v*150;
+      path+=(i?" L ":"M ")+x+" "+y;area+=" L "+x+" "+y;
+    });
+    area+=" L 385 215 Z";
+    document.getElementById("plotLine").setAttribute("d",path);
+    document.getElementById("plotArea").setAttribute("d",area);
+    var points=document.getElementById("plotPoints");points.innerHTML="";
+    loss.forEach(function(v,i){
+      var x=42+i*49,y=205-v*150;
+      var p=el("circle",{cx:x,cy:y,r:i===state.plot?5:3.5,class:"plot-point "+(i===state.plot?"active":"")});points.appendChild(p);
+    });
+  }
+  function render(){renderSpace();renderMatrix();renderGraph();renderPlot();}
+  document.getElementById("menu").addEventListener("click",function(){
+    var hidden=document.body.classList.toggle("nav-hidden");
+    this.setAttribute("aria-expanded",String(!hidden));
+  });
+  document.getElementById("theme").addEventListener("click",function(){document.documentElement.dataset.theme=document.documentElement.dataset.theme==="dark"?"warm":"dark";});
+  render();
+})();
+</script>
+</body>
+</html>

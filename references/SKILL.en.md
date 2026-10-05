@@ -287,7 +287,7 @@ Output is a Markdown document. LaTeX for math — `$...$` inline, `$$...$$` disp
 
 To cite a figure from the paper, use the image file's absolute path, e.g. `![](D:/papers/rope/fig2.png)`, because the document gets moved and relative paths break. When no image was supplied, note the figure number and page where it belongs; never invent a path. Under each figure, one or two sentences telling the reader where to look and what the figure does or doesn't support.
 
-Figures the paper doesn't have but the reader needs — how tensor shapes change across layers, how a quantity moves with a hyperparameter, a geometric illustration — draw them yourself, with standalone runnable Python (matplotlib is enough), saved and referenced by absolute path. Draw only when a figure explains it better than text. Draw to Sanderson's standard: one thing per figure; the same quantity gets the same color in the formula, the figure, and the prose so the reader never has to cross-reference; showing a transformation means before and after side by side; showing a parameter's effect means several values side by side, not one static end state.
+Figures the paper doesn't have but the reader needs — how tensor shapes change across layers, how a quantity moves with a hyperparameter, a geometric illustration — draw them yourself, with standalone runnable Python (matplotlib is enough), saved and referenced by absolute path. Draw only when a figure explains it better than text. Draw to Sanderson's standard: one thing per figure; visual rules are in execution rule 5.3; the same quantity gets the same color in the formula, the figure, and the prose so the reader never has to cross-reference; showing a transformation means before and after side by side; showing a parameter's effect means several values side by side, not one static end state.
 
 Code snippets only when they explain an operation better than the formula, and then: runnable, short, and using the same symbols as the prose.
 
@@ -341,7 +341,7 @@ Create `<short-name>-xray/` next to the PDF, or in the current working directory
 
 ## 4. MD branch
 
-Produce `<short-name>.md`, following the spec exactly. The 3B1B style lands in prose and static figures here: operations written as geometric action, the reader invited to guess before a key design appears, figures showing before and after side by side. Self-drawn figures use matplotlib — one `fig-<name>.py` per figure plus the `fig-<name>.png` it produces; actually run each script, confirming the PNG exists and every path in the document resolves. Figures use the symbol palette from section 5; the two branches should be cross-comparable. Markdown renderers vary in `\color` support, so formulas never carry information by color — symbol-to-color mapping lives only in the figures.
+Produce `<short-name>.md`, following the spec exactly. The 3B1B style lands in prose and static figures here: operations written as geometric action, the reader invited to guess before a key design appears, figures showing before and after side by side. Self-drawn figures use matplotlib — one `fig-<name>.py` per figure plus the `fig-<name>.png` it produces; actually run each script, confirming the PNG exists and every path in the document resolves. Figures follow 5.3 (light variant); the two branches should be cross-comparable. Markdown renderers vary in `\color` support, so formulas never carry information by color — symbol-to-color mapping lives only in the figures.
 
 ## 5. HTML branch
 
@@ -370,18 +370,20 @@ Copy the variable names in the first column exactly; later sections refer to the
 | `--highlight` | highlight background | `#ebdbbc` | `#3a3936` |
 | `--line` | rules, borders | `#deddd8` | `#3d3d3a` |
 
-Symbol palette (shared by prose, formulas, and figures; one set per theme):
+Role colors (shared by prose, formulas, figures, and interaction; color means role — see 5.3):
 
-| Semantic | Light | Dark |
-|---|---|---|
-| red | `#A73D39` | `#EE8884` |
-| orange | `#BD6245` | `#F0A283` |
-| yellow | `#805C1F` | `#D1A041` |
-| green | `#437426` | `#7AB948` |
-| cyan | `#327A7D` | `#6FBEC1` |
-| blue | `#3266AD` | `#80AADD` |
-| purple | `#725299` | `#B793DE` |
-| pink | `#9A4B70` | `#E08DB1` |
+| Variable | Role | Light: line/text · fill · lit fill | Dark: line/text · fill · lit fill |
+|---|---|---|---|
+| `--in` | input | `#1a6fa3` · `#e2eff5` · `#b5d8ec` | `#56b4e9` · `#2a4455` · `#3e6a88` |
+| `--out` | output, prediction, probability | `#9e5c00` · `#f8ecd2` · `#f0cf8a` | `#e69f00` · `#4e3e1b` · `#755d29` |
+| `--op` | learned transform | `#0b7a5c` · `#dcf2e8` · `#a9e3cc` | `#35c79a` · `#224842` · `#2f6b5b` |
+| `--norm` | normalization, ⊕ | `#7a6b00` · `#f8f4cf` · `#efe58a` | `#f0e442` · `#4e4a1b` · `#77702a` |
+| `--loss` | loss, error, failure | `#b34a06` · `#f9e3d6` · `#f1bd9c` | `#ff8a5c` · `#4f2c1f` · `#7a412b` |
+| `--alt` | the paper's new part, a second input stream | `#6a55c2` · `#ebe7f8` · `#cdc2f0` | `#b4a2f0` · `#38334f` · `#544a7e` |
+| `--param` | parameters (text only) | `#a8457c` | `#e4a0c8` |
+| `--wire` | wires, containers, dimensions, notes | `#6e737b` | `#9aa0a8` |
+
+Fill and lit-fill variables are `--in-fill`, `--in-hi`, and so on. In-figure formula ink `--fig-ink`: `--ink` in light, `#e6e6e6` in dark. Containers `--stack-fill`/`--stack-line`: light `#f2f0e8`/`#c9c6bb`, dark `#262624`/`#6e6e6e`.
 
 | Item | Value |
 |---|---|
@@ -390,14 +392,14 @@ Symbol palette (shared by prose, formulas, and figures; one set per theme):
 | TOC | **First column, flush with the container's left edge** (i.e. the page's left edge). `position: sticky; top: 36px`. 224px wide, 13px type / 1.55 line-height, entries wrap at most twice. Resting color `--ink-tertiary`; the current section rises to `--ink` with a 2px `--accent` left bar. **No `overflow`, no `max-height`** — adding either produces the ugly scrollbar. A ~19-section TOC runs about 600px tall at 224px wide, which fits a normal viewport; it does not need to scroll |
 | Body column | The `1fr` track. Starts 48px right of the TOC and **runs to the container's right edge** — no centering, no symmetric dead space. Prose measure capped at `88ch` (about 860px, purely for readability), but **figures, tables, code blocks, and interactive components span the full column width** |
 | Top progress bar | 2px, `--accent`, `opacity: .38`, `position: fixed; top: 0`. **Fades to `opacity: 0` 1.2s after scrolling stops**, fades back in while scrolling. Never the most prominent thing on the page |
-| Theme toggle | A fixed button in the top-right; design it yourself. Toggling writes `<html data-theme>` + `localStorage`; a head script sets the theme before `<body>` renders so nothing flashes |
-| Narrow screens | ≤1100px: TOC collapses to a top-right "Contents" button plus a `position: fixed` overlay card (`max-height: 70vh`, scrollable, closes on click), body goes single-column full width; ≤640px: padding 20px, `h1` 25px, body 16px |
+| Top bar | Two plain-text keys at the top left and nothing else: `☰` hides/shows the TOC (the body takes the full width when hidden), `◐` toggles the theme. Toggling writes `<html data-theme>` + `localStorage`; a head script sets the theme before `<body>` renders so nothing flashes |
+| Narrow screens | ≤1100px: TOC starts hidden and `☰` opens it as a `position: fixed` overlay card (`max-height: 70vh`, scrollable, closes on click), body goes single-column full width; ≤640px: padding 20px, `h1` 25px, body 16px |
 
 **Type.** Headings and body use `"Anthropic Serif"`; UI text `"Anthropic Sans"`; code and numerals `"Anthropic Mono"`. If this machine has Anthropic font files, base64-inline them as `@font-face` (`font-display: swap`; one rule per variable font covering `font-weight: 300 800`). Otherwise fall back to `"Tiempos Text", "Source Serif 4", Georgia, "Noto Serif SC", serif`. Font files do not go in the repo, and not in the skill directory either.
 
 Sizes: body 17px / 1.78; `h1` 31px / 1.28 / 700 with `letter-spacing: -.015em` and a `border-bottom: 3px double`; `h2` 22px / 1.38 / 700 with 64px space above; `h3` 18px / 700. Numerals `tabular-nums`. Inline math stays in the body serif's italic.
 
-**Page order, top to bottom:** title block (your own title plus the info block: paper name, authors, venue and year, link, whether code is public, one-sentence core insight) → symbol palette → body. The TOC is not part of that order — it is the first column's standing index, not a section of the page.
+**Page order, top to bottom:** title block (your own title plus the info block: paper name, authors, venue and year, link, whether code is public, one-sentence core insight) → one Note card stating the color convention (one sentence, each role word in its color, only the roles this paper uses) → body. The TOC is not part of that order — it is the first column's standing index, not a section of the page.
 
 ### 5.2 Notebook-style blocks (this is where the feel comes from)
 
@@ -407,10 +409,43 @@ Use as needed; don't pile them up.
 - **Marginalia.** Secondary but useful material — another reading of a symbol, where a number came from, a counterexample — goes in small type (14px, `--ink-tertiary`) in the right margin rather than interrupting the body. Degrade to a footnote block on narrow screens.
 - **Note / Warning cards.** `--surface-secondary` background for Note, a very light tint of the accent for Warning; 3px accent left bar, 14.5px text. Note is for "easy to miss here"; Warning is for "the authors don't say — and here's the trap." A card may hold a simple line-art SVG (single-stroke, restrained); the art is an anchor and an atmosphere cue, never an argument.
 - **Checkpoint / todo rows.** End a section with "if you actually understood this, you can now answer these three things," each preceded by an empty box (`☐`, plain text is fine). This is the reader's self-check, not the author's task list.
-- **Symbol pills.** When the body mentions a core symbol, render it as a pill like `torch.Tensor` — monospace 13px, `--surface-secondary` background, 1px `--line` border, 4px radius, 6px horizontal padding — with the text tinted that symbol's palette color. Hovering highlights every occurrence of the same symbol in the prose, the formulas, and the figures.
+- **Symbol pills.** When the body mentions a core symbol, render it as a pill like `torch.Tensor` — monospace 13px, `--surface-secondary` background, 1px `--line` border, 4px radius, 6px horizontal padding — with the text tinted that symbol's role color. Hovering highlights every occurrence of the same symbol in the prose, the formulas, and the figures.
 - **Code blocks.** A top row with an `In [n]:`-style monospace label plus the filename, a 1px rule on the left, `--surface-code` background. No rainbow syntax highlighting — two colors only: comments `--ink-tertiary`, keywords and numbers `--accent-text`.
 
-### 5.3 Animation and interaction design
+### 5.3 Figure language (every self-drawn figure, HTML and MD)
+
+In one line: **color is a second notation; a figure holds names and symbols, the prose holds the explanation.** Every rule below is hard.
+
+- **Color = role.** Use the 5.1 role colors. A role keeps its color in formulas, prose, figures, and interaction, and across representations (string, index, one-hot, vector, a matrix row). At most five role colors plus gray per figure. Color is never decoration: two boxes of the same role never get different colors.
+- **Boxes.** 1.5 stroke in the role color + the role fill + same-color text, corner radius 4.6. The box holds the operation's name only: 1–3 words, at most 3 lines, each centered (`text-anchor="middle"` + `dominant-baseline="central"`; never nudge x by hand). Boxes in a row share height (60) and centerline; widths come from a few tiers: LN 33, Linear 60, FFN 73, Attention 91, Embedding 85. No white-box-black-text, no solid color blocks with white text, no explanations, formulas, or shapes inside a box.
+- **Parameters** sit directly under their box, 12-unit pink italic: $W^Q\,W^K\,W^V\,W^O$, $\gamma\,\beta$, $\mathbf{E}$. Shapes go above the wire, in gray.
+- **Inputs and outputs get no box**: role-colored text plus one arrow of the same color.
+- **Wires.** Gray, 1.3, horizontal and vertical only, right-angle turns (fully connected bipartite graphs excepted). Small solid triangle heads (6 long, 5.2 wide) whose tip touches the box edge. Box-to-box gap 15; 18 on either side of a branch point. Branch points are small solid gray dots (r 2.4); wires into a dot carry no arrowhead. A residual rises vertically from its dot to 60 off the row's centerline (above for the encoder, below for the decoder), runs across, and drops vertically into a yellow ⊕ (r 8.2, yellow stroke, fill, and cross).
+- **Repeated blocks** sit in one rounded container (radius 11.5, `--stack-fill`/`--stack-line`), padded 9 left and right and 78 above and below the centerline, with `N×` in gray italic outside it. One container level; never nest.
+- **Fixed functions** (positional encoding, masks) are a thin gray circle (r 13) with a glyph, a gray label beside it, and a vertical arrow into the ⊕.
+- **Type.** Use KaTeX's own fonts: `KaTeX_Main` for words, `KaTeX_Math` italic for variables, `KaTeX_Typewriter` for tokens and code. 13 in boxes, 12 for parameters and notes, 15 for inputs and outputs; at most three sizes per figure, nothing under 11 viewBox units. viewBox width at most 1260; give the SVG a `min-width` of 0.82 × that width so narrow screens scroll instead of shrinking the type.
+- **Never in a figure:** a title, "Figure n", a legend box or legend dots, explanatory paragraphs, glow, shadow, gradient (any `filter`), animated dashes. The figure number and a one-sentence takeaway go in the caption below; color meanings come from the color-convention Note at the top.
+- **One formula may live in the figure**, in empty space, in `--fig-ink`, with symbols colored by role: $\role{out}{a}=\mathrm{softmax}(\role{param}{W}\role{in}{x})$.
+- **Highlighting means everything else stays back.** The element in focus switches to its `-hi` fill and a 2.8 stroke; wires attached to it go from 30% to 100% opacity; everything else stays put, keeps its color, and is never hidden. To report a number, draw a straight same-color leader from the lit element into empty space and write $p(\texttt{to},\texttt{meet})=0.16$ there, unboxed.
+- **Matrices:** gray cells and grid, numbers in `--fig-ink`; the cell, row, or column in focus gets a role-color stroke and `-hi` fill; row and column labels sit outside the grid in their role colors; axes are labeled role-color arrows.
+- **Tensor shapes:** vectors and matrices as role-colored grids, third-order tensors in oblique projection (back faces a faint same-color fill); dimension arrows and letters outside the shape, in gray; one line of math and one line of code underneath. No perspective or other fake 3D.
+- **Two panels:** two representations of the same quantity may sit side by side, with the same element lit in both.
+
+What weaker models get wrong, checked one by one: a rounded color box stuffed with small explanatory text; text on lines or on other text; hand-placed coordinates that leave labels off-center; text shrunk to 9–10px; arrows that stop short of a box or run into it; diagonal wires everywhere; one color per box; more than 12 boxes in one figure (split it); containers inside containers; figures that vanish in one theme; long box labels (use the paper's own short name).
+
+**How to draw.** Use `references/figure-kit.html`: copy its `FIGKIT TOKENS` CSS and `FIGKIT JS` script whole into the page, then build with `f.row()` (one auto-spaced, auto-arrowed row), `f.skip()` (residuals), `f.stack()` (repeated blocks), `f.io()`, `f.note()`, `f.math()`, `f.light()` — never hand-written SVG coordinates. Give KaTeX the macro `macros: {"\\role": "\\htmlClass{r-#1}{#2}"}` and write `\role{out}{a}` in prose and figure formulas alike. The kit contains a full encoder-decoder architecture; adapt it for architecture papers. In the MD branch, matplotlib uses the same numbers and colors (light variant, opaque `--bg` background, `mathtext.fontset = "cm"`).
+
+### 5.4 Interaction: the figure is the interface
+
+Every interactive figure is first a complete static figure — a screenshot taken before any click belongs in a book. Interaction does one of three things: change which element is lit (click a token, node, or cell), change one parameter, or step forward and back. Lit looks exactly like 5.3's highlighting.
+
+Only these controls, at most one row per figure, under the figure and aligned to its left edge, with no frame and no fill:
+- **Click the figure** (preferred): hover previews, click locks, `Esc` resets.
+- **Slider:** a 1px gray track and a small dot (role-color stroke, role fill); the parameter's symbol on the left in role-color italic, its value on the right in `tabular-nums`.
+- **Steps:** `‹ 2 / 5 ›` in the body face in gray, followed by one sentence about this step; arrow keys work too; no autoplay by default.
+- **Guess first:** a text link in the same row — "guess first, then click to see →".
+
+Never (this is where the "AI look" comes from): toolbars above the figure, "FIG." id strips, progress bars; rows of icon-only buttons (▶ ↺ ⟳); 9–10px monospace status readouts; dropdowns, checkboxes, filled or rounded buttons, pill button groups; black hover tooltips; a "click a node" hint in the corner.
 
 Prose is the substance; interaction serves it. The HTML version is not a shortened MD with animation bolted on. **Every interactive component answers a specific question in the prose:** one line above says what the reader should see after dragging or clicking, one line below says what it means. No decorative animation.
 
@@ -433,20 +468,21 @@ How the animation works:
 - Use `requestAnimationFrame` or a CSS transition, not stacked timers; only one rAF loop at a time.
 - Under `prefers-reduced-motion: reduce`, skip transitions to the end state and keep every interaction manually steppable.
 - Numerals use `tabular-nums`; digits must not change width mid-animation.
-- Color formulas with KaTeX `\htmlClass{sym-q}{q}` plus CSS classes, sharing class names with hover highlighting. Call auto-render with `trust: true`, `strict: false`, and explicit `delimiters` (`$$…$$` and `\[…\]` display; `$…$` and `\(…\)` inline — auto-render does not recognize a single `$` by default). Inside HTML-written formulas, escape `<`, `>`, `&` as `\lt`, `\gt`, `\&` so the HTML parser doesn't eat them first.
+- Color formulas with `\role{role}{symbol}` (expands to `\htmlClass{r-role}{…}`); hover linking adds a symbol class such as `\htmlClass{sym-q}{q}`. Call auto-render with `trust: true`, `strict: false`, and explicit `delimiters` (`$$…$$` and `\[…\]` display; `$…$` and `\(…\)` inline — auto-render does not recognize a single `$` by default). Inside HTML-written formulas, escape `<`, `>`, `&` as `\lt`, `\gt`, `\&` so the HTML parser doesn't eat them first.
 - Every component shows content in its initial state — no blank panel waiting for a click — and neither end of a slider may produce NaN, whitespace, or an out-of-range frame.
 - Numbers constructed for demonstration are labeled "illustrative"; numbers from the paper are copied exactly with the table or figure they came from.
 
-### 5.4 Technical constraints and self-check
+### 5.5 Technical constraints and self-check
 
 One file, vanilla JS plus SVG/Canvas, no framework, no build step. The only external dependency is KaTeX from CDN (css, js, auto-render); offline, formulas degrade to LaTeX source and the interactions still work. Embed paper figures as base64 (if the total exceeds roughly 20 MB, switch to `file:///` absolute paths). Where only a static figure is needed, matplotlib to PNG and embed it as before, keeping the script in the output directory.
 
-The theme toggle is a default, not an option. Put a synchronous script in `<head>` that reads `localStorage.theme` (falling back to `prefers-color-scheme`) and writes the result to `<html data-theme>` before `<body>` renders, and pin the toggle button in the top-right corner. Both halves matter — doing this inside `DOMContentLoaded`, or just before `</body>`, still flashes the light theme first.
+The theme toggle is a default, not an option. Put a synchronous script in `<head>` that reads `localStorage.theme` (falling back to `prefers-color-scheme`) and writes the result to `<html data-theme>` before `<body>` renders, and put the toggle in the top bar's left corner. Both halves matter — doing this inside `DOMContentLoaded`, or just before `</body>`, still flashes the light theme first.
 
 Before delivering, walk this list:
 
 - Extract every inline `<script>` to a temp file and run `node --check` (where node exists), then delete the temp file.
-- If a browser tool is available, open the page, check the first screen and each component, and confirm the console is clean.
+- If a browser tool is available, open the page, check the first screen and each component, and confirm the console is clean. With Chrome or Edge, run `chrome --headless=new --virtual-time-budget=8000 --dump-dom "file:///…/x.html?lint"` and read `FK.lint()`'s output in `<pre id="fk-lint">` (overlaps, tiny text, out of bounds, label overflow, text on a wire, filters); deliver only at zero. Then take one `--screenshot` each with `?theme=dark` and `?theme=light` and look at both.
+- Check every figure against 5.3's "never" list and its "what weaker models get wrong" list.
 - TOC flush left, body starting 48px to its right and running to the right edge; not a big empty left area, not a narrow centered column.
 - The TOC column has no scrollbar, and entries wrap at most twice.
 - Both themes: current TOC item, cards, code blocks, and tables stay legible on dark; accent contrast holds.

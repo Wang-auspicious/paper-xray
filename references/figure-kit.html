@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>figure kit</title>
+<script>(function(){var t=localStorage.getItem('theme');if(!t){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}if(/[?&]theme=dark/.test(location.search))t='dark';if(/[?&]theme=light/.test(location.search))t='light';document.documentElement.setAttribute('data-theme',t)})();</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<style>
+/* ===== page colors (same as SKILL.md 5.1; demo only) ===== */
+:root{--bg:#faf9f5;--surface-secondary:#f5f4ed;--ink:#141413;--ink-secondary:#3d3d3a;--ink-tertiary:#73726c;--accent:#d97757;--line:#deddd8}
+[data-theme="dark"]{--bg:#30302e;--surface-secondary:#262624;--ink:#faf9f5;--ink-secondary:#c2c0b6;--ink-tertiary:#9c9a92;--accent:#e38b6b;--line:#3d3d3a}
+
+/* ===== FIGKIT TOKENS START — copy whole block ===== */
+:root{
+  --in:#1a6fa3;   --in-fill:#e2eff5;   --in-hi:#b5d8ec;
+  --out:#9e5c00;  --out-fill:#f8ecd2;  --out-hi:#f0cf8a;
+  --op:#0b7a5c;   --op-fill:#dcf2e8;   --op-hi:#a9e3cc;
+  --norm:#7a6b00; --norm-fill:#f8f4cf; --norm-hi:#efe58a;
+  --loss:#b34a06; --loss-fill:#f9e3d6; --loss-hi:#f1bd9c;
+  --alt:#6a55c2;  --alt-fill:#ebe7f8;  --alt-hi:#cdc2f0;
+  --param:#a8457c;
+  --wire:#6e737b;
+  --fig-ink:var(--ink);
+  --stack-fill:#f2f0e8; --stack-line:#c9c6bb;
+  --cell:#f0eee6; --cell-line:#c9c6bb;
+}
+[data-theme="dark"]{
+  --in:#56b4e9;   --in-fill:#2a4455;   --in-hi:#3e6a88;
+  --out:#e69f00;  --out-fill:#4e3e1b;  --out-hi:#755d29;
+  --op:#35c79a;   --op-fill:#224842;   --op-hi:#2f6b5b;
+  --norm:#f0e442; --norm-fill:#4e4a1b; --norm-hi:#77702a;
+  --loss:#ff8a5c; --loss-fill:#4f2c1f; --loss-hi:#7a412b;
+  --alt:#b4a2f0;  --alt-fill:#38334f;  --alt-hi:#544a7e;
+  --param:#e4a0c8;
+  --wire:#9aa0a8;
+  --fig-ink:#e6e6e6;
+  --stack-fill:#262624; --stack-line:#6e6e6e;
+  --cell:#2e2e2e; --cell-line:#6e6e6e;
+}
+.r-in{--c:var(--in);--f:var(--in-fill);--h:var(--in-hi);color:var(--in)}
+.r-out{--c:var(--out);--f:var(--out-fill);--h:var(--out-hi);color:var(--out)}
+.r-op{--c:var(--op);--f:var(--op-fill);--h:var(--op-hi);color:var(--op)}
+.r-norm{--c:var(--norm);--f:var(--norm-fill);--h:var(--norm-hi);color:var(--norm)}
+.r-loss{--c:var(--loss);--f:var(--loss-fill);--h:var(--loss-hi);color:var(--loss)}
+.r-alt{--c:var(--alt);--f:var(--alt-fill);--h:var(--alt-hi);color:var(--alt)}
+.r-param{--c:var(--param);color:var(--param)}
+.r-wire{--c:var(--wire);color:var(--wire)}
+
+.fk-fig{margin:30px 0 10px;overflow-x:auto}
+.fk{display:block;width:100%;height:auto;overflow:visible}
+.fk text{font-family:"KaTeX_Main","Latin Modern Roman","CMU Serif","Noto Serif SC","Songti SC",serif;fill:var(--fig-ink);dominant-baseline:central}
+.fk .mi{font-family:"KaTeX_Math","Latin Modern Math","CMU Serif",serif;font-style:italic}
+.fk .tt{font-family:"KaTeX_Typewriter","Latin Modern Mono",Consolas,monospace}
+.fk .bf{font-weight:700}
+.fk [class*="r-"] text,.fk text[class*="r-"]{fill:var(--c)}
+.fk tspan[class*="r-"]{fill:var(--c)}
+.fk .blk>rect,.fk .node>circle{fill:var(--f);stroke:var(--c);stroke-width:1.5}
+.fk .blk.on>rect,.fk .node.on>circle{fill:var(--h);stroke-width:2.8}
+.fk .add>circle{fill:var(--norm-fill);stroke:var(--norm);stroke-width:1.4}
+.fk .add>path{stroke:var(--norm);stroke-width:1.9;fill:none}
+.fk .wire{fill:none;stroke:var(--wire);stroke-width:1.3}
+.fk .wire[class*="r-"]{stroke:var(--c)}
+.fk .head{fill:var(--wire)}
+.fk .head[class*="r-"]{fill:var(--c)}
+.fk .dot{fill:var(--wire)}
+.fk .edge{stroke:var(--wire);stroke-width:1.2;opacity:.3}
+.fk .edge.on{opacity:1}
+.fk .stack{fill:var(--stack-fill);stroke:var(--stack-line);stroke-width:1.5}
+.fk .pe>circle{fill:none;stroke:var(--wire);stroke-width:1.3}
+.fk .pe>path{fill:none;stroke:var(--wire);stroke-width:1.3}
+.fk .note{fill:var(--wire)}
+.fk .param{fill:var(--param)}
+.fk .cell text{fill:var(--fig-ink)}
+.fk .cell>rect{fill:var(--cell);stroke:var(--cell-line);stroke-width:1}
+.fk .cell.on>rect{fill:var(--h);stroke:var(--c);stroke-width:2.6}
+.fk .hit{cursor:pointer}
+.fk .lead{stroke:var(--c);stroke-width:1.3}
+.fk foreignObject div{font-size:13.5px;color:var(--fig-ink);text-align:center;line-height:1.2}
+
+/* controls: one line, text-styled, no fill, no border */
+.fk-ctl{display:flex;align-items:center;gap:14px;margin:6px 0 0;font:15px/1.5 "KaTeX_Main",Georgia,serif;color:var(--ink-tertiary);font-variant-numeric:tabular-nums}
+.fk-ctl button{all:unset;cursor:pointer;color:var(--ink-tertiary);padding:0 2px}
+.fk-ctl button:hover,.fk-ctl button:focus-visible{color:var(--ink)}
+.fk-ctl .say{color:var(--ink-secondary)}
+.fk-ctl input[type=range]{-webkit-appearance:none;appearance:none;width:220px;height:14px;background:transparent}
+.fk-ctl input[type=range]::-webkit-slider-runnable-track{height:1px;background:var(--wire)}
+.fk-ctl input[type=range]::-moz-range-track{height:1px;background:var(--wire)}
+.fk-ctl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;margin-top:-6px;border-radius:50%;background:var(--f);border:1.5px solid var(--c)}
+.fk-ctl input[type=range]::-moz-range-thumb{width:10px;height:10px;border-radius:50%;background:var(--f);border:1.5px solid var(--c)}
+.fk-cap{margin:8px 0 34px;font-size:14px;color:var(--ink-tertiary);max-width:88ch}
+.fk-cap b{font-weight:400;color:var(--ink-secondary);margin-right:.6em}
+@media (prefers-reduced-motion:reduce){.fk *{transition:none!important}}
+/* ===== FIGKIT TOKENS END ===== */
+
+/* demo shell */
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font:17px/1.78 "Anthropic Serif","Tiempos Text","Source Serif 4",Georgia,"Noto Serif SC",serif}
+.top{position:sticky;top:0;z-index:5;height:44px;display:flex;align-items:center;gap:16px;padding:0 48px;background:var(--bg);border-bottom:1px solid var(--line)}
+.top button{all:unset;cursor:pointer;color:var(--ink-tertiary);font-size:16px}
+.top button:hover{color:var(--ink)}
+.shell{max-width:1560px;margin:0 auto;padding:0 48px 100px;display:grid;grid-template-columns:224px minmax(0,1fr);gap:48px;align-items:start}
+body.nav-hidden .shell{grid-template-columns:minmax(0,1fr)}
+body.nav-hidden .toc{display:none}
+.toc{position:sticky;top:80px;font-size:13px;line-height:1.55;padding-top:36px}
+.toc a{display:block;color:var(--ink-tertiary);text-decoration:none;padding:3px 0 3px 10px;border-left:2px solid transparent}
+.toc a:hover{color:var(--ink)}
+main{padding-top:24px;min-width:0}
+main p{max-width:88ch}
+h1{font-size:31px;line-height:1.28;border-bottom:3px double var(--line);padding-bottom:10px}
+h2{font-size:22px;margin-top:64px}
+.note{background:var(--surface-secondary);border-left:3px solid var(--in);padding:12px 18px;font-size:14.5px;max-width:88ch}
+code{font-size:14px}
+</style>
+</head>
+<body>
+<header class="top">
+  <button id="navBtn" aria-label="contents">☰</button>
+  <button id="themeBtn" aria-label="theme">◐</button>
+</header>
+<div class="shell">
+<nav class="toc" aria-label="contents">
+  <a href="#arch">1 Architecture</a>
+  <a href="#onehot">2 Click + linked panels</a>
+  <a href="#temp">3 Slider + callout</a>
+  <a href="#tensor">4 Tensor shapes</a>
+  <a href="#api">5 API</a>
+</nav>
+<main>
+<h1>figure kit</h1>
+<p>Copy the <code>FIGKIT TOKENS</code> CSS and the <code>FIGKIT JS</code> script whole; build figures with the API below, never with hand-placed SVG coordinates.</p>
+
+<div class="note"><b class="r-in">Colors</b>　Inputs in every form are <span class="r-in">blue</span>; outputs and probabilities <span class="r-out">orange</span>; learned transforms <span class="r-op">green</span>; normalization and residual adds <span class="r-norm">yellow</span>; parameters <span class="r-param">pink</span>; wires, containers, dimensions and notes <span class="r-wire">gray</span>.</div>
+
+<h2 id="arch">1 Architecture</h2>
+<p>Step through the encoder: the lit box is the current step; its output wire carries the tensor shape.</p>
+<div class="fk-fig" id="figArch"></div>
+<div class="fk-ctl" id="ctlArch"></div>
+<p class="fk-cap"><b>Figure 1</b>Illustrative sizes: $n=3$, $d=512$.</p>
+
+<h2 id="onehot">2 A one-hot times W picks a column of W</h2>
+<p>Click any input token. Its five edges turn solid on the left; the matching column of $W$ lights up on the right.</p>
+<div class="fk-fig" id="figOneHot"></div>
+<p class="fk-cap"><b>Figure 2</b>Each cell is $W_{ji}$; output fill depth is $a_j$. Illustrative numbers.</p>
+
+<h2 id="temp">3 How far temperature sharpens a distribution</h2>
+<p>Drag $\tau$. Left concentrates mass on the largest bar; right flattens all five.</p>
+<div class="fk-fig" id="figTemp"></div>
+<div class="fk-ctl r-out" id="ctlTemp"></div>
+<p class="fk-cap"><b>Figure 3</b>$a=\mathrm{softmax}(z/\tau)$ with illustrative logits $z$.</p>
+
+<h2 id="tensor">4 Tensor shapes</h2>
+<div class="fk-fig" id="figTensor"></div>
+<p class="fk-cap"><b>Figure 4</b>Dimension arrows outside the shape, in gray; one line of math, one line of code.</p>
+
+<h2 id="api">5 API</h2>
+<pre style="font-size:13.5px;line-height:1.6;background:var(--surface-secondary);padding:14px 18px;overflow:auto">const f = FK.fig('#host', 1260, 470, 'alt text');   // viewBox width ≤ 1260
+f.row(y, x0, [                                         // one row, auto-spaced, auto-arrowed
+  {id:'emb', box:'Input\nEmbedding', role:'in', w:'xl', param:'\\mathbf{E}'},
+  {id:'a0', add:true},
+  {id:'d0', dot:true, gap:25},
+  {id:'mha', box:'Multi-Head\nAttention', role:'op', w:'l', param:'W^Q W^K W^V W^O'},
+]);
+// width tiers: s=33 m=60 ffn=73 l=91 xl=85, or a number
+f.skip('d0','a1','top');            // residual: branch dot around to ⊕, top|bottom
+f.stack('d0','ln2',{label:'N×', side:'top'});  // repeated-block container
+f.pe('a0','top');                    // positional-encoding glyph
+f.io('Inputs',{to:'emb', role:'in'});           // input label + same-color arrow
+f.io('Output\nProbabilities',{from:'sm', role:'out'});
+f.wire([[x1,y1],[x2,y1],[x2,y2]], {arrow:true});  // horizontal/vertical only
+f.note('K, V', x, y, 'start');      // gray note
+f.math('\\role{out}{a} = softmax(\\role{param}{W}\\role{in}{x})', x, y);  // in-figure formula
+f.p('mha.l') → [x,y]   // anchors: .l .r .t .b .c
+f.light(['mha'])       // highlight; f.light([]) resets
+FK.lint()              // run before delivery: overlap, tiny text, out of bounds, label overflow
+</pre>
+</main>
+</div>
+
+<script>
+/* ===== FIGKIT JS START — copy whole block ===== */
+var FK = (function () {
+  'use strict';
+  var NS = 'http://www.w3.org/2000/svg';
+  // all sizes scale from box height 60
+  var S = { h: 60, gap: 15, gapDot: 18, rx: 4.6, add: 8.2, dot: 2.4, aL: 6, aW: 5.2,
+            fs: 13, lh: 15.6, fsSmall: 12, fsIO: 15, lift: 60.8, stackPadX: 9.2, stackPadY: 78, pe: 13.2 };
+  var W = { s: 33, m: 60, ffn: 73, l: 91, xl: 85 };
+  var GREEK = { alpha:'α',beta:'β',gamma:'γ',delta:'δ',epsilon:'ε',eta:'η',theta:'θ',lambda:'λ',mu:'μ',pi:'π',sigma:'σ',tau:'τ',phi:'φ',psi:'ψ',omega:'ω',
+    Delta:'Δ',Sigma:'Σ',Omega:'Ω',Phi:'Φ',in:'∈',times:'×',cdot:'·',to:'→',mapsto:'↦',top:'⊤',sum:'Σ',le:'≤',ge:'≥',approx:'≈',infty:'∞',odot:'⊙',oplus:'⊕',ldots:'…',partial:'∂',nabla:'∇' };
+  var BB = { R:'ℝ', N:'ℕ', Z:'ℤ', E:'𝔼', C:'ℂ', Q:'ℚ' };
+  var WORDS = /^(softmax|Attn|LN|exp|log|max|min|sin|cos|tanh|ReLU|GELU|Linear|Sublayer|MLP|FFN|concat|diag|Var|argmax|sigmoid|Norm|RMSNorm|LayerNorm|Conv|Dropout|KL|CE|Loss|Attention)/;
+
+  function el(tag, a, parent) {
+    var n = document.createElementNS(NS, tag);
+    for (var k in a) if (a[k] !== undefined && a[k] !== null) n.setAttribute(k, a[k]);
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+
+  // TeX subset -> tspans: ^ _ {} \role{r}{..} \htmlClass{r-x}{..} \mathbf \mathrm \text \texttt \mathbb greek
+  function rich(t, src, fs) {
+    var i = 0, base = 0;
+    function grp() { // one atom: {...}, a command, or a char
+      if (src[i] === '{') { var d = 1, j = ++i; while (i < src.length && d) { if (src[i] === '{') d++; else if (src[i] === '}') d--; i++; } return src.slice(j, i - 1); }
+      if (src[i] === '\\') { var m = /^\\[A-Za-z]+/.exec(src.slice(i)); if (m) { i += m[0].length; return m[0]; } }
+      return src[i++];
+    }
+    function emit(txt, cls, shift, size) {
+      if (!txt) return;
+      var a = { 'class': cls || null };
+      var dy = shift - base; if (dy) a.dy = dy.toFixed(2);
+      base = shift; if (size) a['font-size'] = size;
+      el('tspan', a, t).textContent = txt;
+    }
+    function run(s, ctx) {
+      var k = 0;
+      while (k < s.length) {
+        var c = s[k];
+        if (c === '\\') {
+          var m = /^\\([A-Za-z]+|.)/.exec(s.slice(k)); k += m[0].length; var cmd = m[1];
+          var take = function () { src = s; i = k; var g = grp(); k = i; return g; };
+          if (cmd === 'role' || cmd === 'htmlClass') { var r = take().replace(/^r-/, ''); run(take(), Object.assign({}, ctx, { role: 'r-' + r })); }
+          else if (cmd === 'mathbf' || cmd === 'bm') run(take(), Object.assign({}, ctx, { font: 'bf' }));
+          else if (cmd === 'mathrm' || cmd === 'text' || cmd === 'operatorname') run(take(), Object.assign({}, ctx, { font: 'rm' }));
+          else if (cmd === 'texttt' || cmd === 'mathtt') run(take(), Object.assign({}, ctx, { font: 'tt' }));
+          else if (cmd === 'mathbb') { var b = take(); emit(BB[b] || b, cls(ctx, 'rm'), ctx.shift, ctx.size); }
+          else if (cmd === 'sqrt') { emit('√', cls(ctx, 'rm'), ctx.shift, ctx.size); run(take(), ctx); }
+          else if (cmd === ',' || cmd === ';' || cmd === ' ' || cmd === 'quad') emit(cmd === 'quad' ? ' ' : ' ', null, ctx.shift, ctx.size);
+          else if (cmd === '{' || cmd === '}') emit(cmd, cls(ctx, 'rm'), ctx.shift, ctx.size);
+          else if (GREEK[cmd]) emit(GREEK[cmd], cls(ctx, /^[a-z]/.test(cmd) && cmd.length > 2 && 'alphabetagammadeltaepsilonetathetalambdamupisigmatauphipsiomega'.indexOf(cmd) >= 0 ? 'mi' : 'rm'), ctx.shift, ctx.size);
+          else emit(cmd, cls(ctx, 'rm'), ctx.shift, ctx.size);
+        } else if (c === '^' || c === '_') {
+          k++; src = s; i = k; var g = grp(); k = i;
+          var sz = (ctx.size || fs) * 0.72;
+          var sh = (ctx.shift || 0) + (c === '^' ? -0.38 : 0.24) * (ctx.size || fs);
+          run(g, Object.assign({}, ctx, { shift: sh, size: sz.toFixed(2) }));
+        } else if (c === '{') {
+          src = s; i = k; var gg = grp(); k = i; run(gg, ctx);
+        } else if (c === ' ') { emit(' ', null, ctx.shift, ctx.size); k++; }
+        else if (/[A-Za-z]/.test(c)) {
+          var w = WORDS.exec(s.slice(k));
+          if (w && ctx.font === 'mi') { emit(w[0], cls(ctx, 'rm'), ctx.shift, ctx.size); k += w[0].length; }
+          else { emit(c, cls(ctx, ctx.font), ctx.shift, ctx.size); k++; }
+        } else { emit(c, cls(ctx, 'rm'), ctx.shift, ctx.size); k++; }
+      }
+    }
+    function cls(ctx, font) { return [font === 'rm' ? '' : font, ctx.role || ''].join(' ').trim() || null; }
+    run(src, { font: 'mi', shift: 0, size: null, role: null });
+    if (base) el('tspan', { dy: (-base).toFixed(2) }, t).textContent = '​';
+    return t;
+  }
+
+  function Fig(host, w, h, label) {
+    host = typeof host === 'string' ? document.querySelector(host) : host;
+    this.w = w; this.h = h; this.at = {};
+    this.svg = el('svg', { 'class': 'fk', viewBox: '0 0 ' + w + ' ' + h, role: 'img', 'aria-label': label || '' }, host);
+    this.svg.style.minWidth = Math.round(w * 0.82) + 'px';      // scroll rather than shrink text
+    this.svg.style.maxWidth = Math.round(w * 1.1) + 'px';       // small figures never blow up
+    this.gS = el('g', {}, this.svg); this.gW = el('g', {}, this.svg); this.gB = el('g', {}, this.svg); this.gT = el('g', {}, this.svg);
+  }
+  var P = Fig.prototype;
+
+  P.p = function (ref) {
+    if (Array.isArray(ref)) return ref;
+    var s = ref.split('.'), a = this.at[s[0]]; if (!a) throw new Error('FK: unknown id ' + s[0]);
+    var side = s[1] || 'c';
+    return side === 'l' ? [a.x - a.w / 2, a.y] : side === 'r' ? [a.x + a.w / 2, a.y] : side === 't' ? [a.x, a.y - a.h / 2] : side === 'b' ? [a.x, a.y + a.h / 2] : [a.x, a.y];
+  };
+
+  P.label = function (txt, x, y, o) {
+    o = o || {};
+    var t = el('text', { x: x, y: y, 'text-anchor': o.anchor || 'middle', 'font-size': o.size || S.fs, 'class': o.cls || null }, o.parent || this.gT);
+    rich(t, txt, o.size || S.fs);
+    return t;
+  };
+
+  P.box = function (id, o) {
+    var w = typeof o.w === 'number' ? o.w : (W[o.w] || W.m), h = o.h || S.h;
+    var g = el('g', { 'class': 'blk r-' + (o.role || 'op'), 'data-id': id }, this.gB);
+    el('rect', { x: o.x - w / 2, y: o.y - h / 2, width: w, height: h, rx: S.rx }, g);
+    var lines = String(o.text).split('\n'), y0 = o.y - (lines.length - 1) * S.lh / 2;
+    lines.forEach(function (ln, k) { el('text', { x: o.x, y: y0 + k * S.lh, 'text-anchor': 'middle', 'font-size': S.fs }, g).textContent = ln; });
+    if (o.param) this.label(o.param, o.x, o.y + h / 2 + 12, { size: S.fsSmall, cls: 'param' });
+    this.at[id] = { x: o.x, y: o.y, w: w, h: h, kind: 'box', g: g };
+    return g;
+  };
+  P.add = function (id, o) {
+    var g = el('g', { 'class': 'add', 'data-id': id }, this.gB), r = S.add, a = r * 0.5;
+    el('circle', { cx: o.x, cy: o.y, r: r }, g);
+    el('path', { d: 'M' + (o.x - a) + ' ' + o.y + 'H' + (o.x + a) + 'M' + o.x + ' ' + (o.y - a) + 'V' + (o.y + a) }, g);
+    this.at[id] = { x: o.x, y: o.y, w: 2 * r, h: 2 * r, kind: 'add', g: g };
+  };
+  P.dot = function (id, o) {
+    el('circle', { 'class': 'dot', cx: o.x, cy: o.y, r: S.dot }, this.gB);
+    this.at[id] = { x: o.x, y: o.y, w: 0, h: 0, kind: 'dot' };
+  };
+
+  // orthogonal polyline; arrow tip lands exactly on the end point
+  P.wire = function (pts, o) {
+    o = o || {}; var self = this;
+    pts = pts.map(function (q) { return self.p(q); });
+    var n = pts.length, a = pts[n - 2], b = pts[n - 1], arrow = o.arrow !== false;
+    var dx = Math.sign(b[0] - a[0]), dy = Math.sign(b[1] - a[1]);
+    var end = arrow ? [b[0] - dx * S.aL * 0.8, b[1] - dy * S.aL * 0.8] : b;
+    var d = 'M' + pts.slice(0, n - 1).map(function (q) { return q[0] + ' ' + q[1]; }).join('L') + 'L' + end[0] + ' ' + end[1];
+    var role = o.role ? ' r-' + o.role : '';
+    var path = el('path', { d: d, 'class': 'wire' + role + (o.cls ? ' ' + o.cls : ''), 'data-pts': JSON.stringify(pts) }, this.gW);
+    if (arrow) {
+      var px = -dy, py = dx, L = S.aL, Wd = S.aW / 2;
+      el('path', { 'class': 'head' + role, d: 'M' + b[0] + ' ' + b[1] + 'L' + (b[0] - dx * L + px * Wd) + ' ' + (b[1] - dy * L + py * Wd) + 'L' + (b[0] - dx * L - px * Wd) + ' ' + (b[1] - dy * L - py * Wd) + 'Z' }, this.gW);
+    }
+    return path;
+  };
+
+  // one row: auto spacing, auto arrows (no arrowhead into a dot)
+  P.row = function (y, x0, items) {
+    var x = x0, prev = null, self = this;
+    items.forEach(function (it, k) {
+      var kind = it.add ? 'add' : it.dot ? 'dot' : 'box';
+      var w = kind === 'add' ? 2 * S.add : kind === 'dot' ? 0 : (typeof it.w === 'number' ? it.w : (W[it.w] || W.m));
+      if (k) x += it.gap !== undefined ? it.gap : (kind === 'dot' || (prev && prev.kind === 'dot')) ? S.gapDot : S.gap;
+      var cx = x + w / 2;
+      if (kind === 'box') self.box(it.id, { x: cx, y: y, w: w, role: it.role, text: it.box, param: it.param });
+      else if (kind === 'add') self.add(it.id, { x: cx, y: y });
+      else self.dot(it.id, { x: cx, y: y });
+      if (prev && it.link !== false) self.wire([[prev.r, y], [x, y]], { arrow: kind !== 'dot' });
+      x += w; prev = { kind: kind, r: x };
+    });
+    return x;
+  };
+
+  P.skip = function (from, to, side) {
+    var a = this.p(from), b = this.p(to), up = side !== 'bottom', yy = a[1] + (up ? -S.lift : S.lift);
+    this.wire([a, [a[0], yy], [b[0], yy], [b[0], b[1] + (up ? -S.add : S.add)]]);
+  };
+  P.stack = function (from, to, o) {
+    o = o || {};
+    var a = this.p(from + '.l'), b = this.p(to + '.r'), x0 = a[0] - S.stackPadX, x1 = b[0] + S.stackPadX;
+    var y0 = a[1] - S.stackPadY, y1 = a[1] + S.stackPadY;
+    el('rect', { 'class': 'stack', x: x0, y: y0, width: x1 - x0, height: y1 - y0, rx: 11.5 }, this.gS);
+    if (o.label) this.label(o.label, (x0 + x1) / 2, o.side === 'bottom' ? y1 + 14 : y0 - 13, { size: 13.5, cls: 'note' });
+  };
+  P.pe = function (addId, side) {
+    var a = this.p(addId), up = side !== 'bottom', cy = a[1] + (up ? -65.4 : 65.4), r = S.pe, g = el('g', { 'class': 'pe' }, this.gB);
+    el('circle', { cx: a[0], cy: cy, r: r }, g);
+    el('path', { d: 'M' + (a[0] - r * .62) + ' ' + cy + 'C' + (a[0] - r * .35) + ' ' + (cy - r * 1.05) + ' ' + (a[0] - r * .1) + ' ' + (cy - r * .8) + ' ' + a[0] + ' ' + cy + 'S' + (a[0] + r * .35) + ' ' + (cy + r * 1.05) + ' ' + (a[0] + r * .62) + ' ' + cy }, g);
+    this.wire([[a[0], cy + (up ? r : -r)], [a[0], a[1] + (up ? -S.add : S.add)]]);
+    this.label('PE', a[0] - r - 6, cy, { anchor: 'end', size: 12, cls: 'note' });
+  };
+  P.io = function (txt, o) {
+    var len = o.len || 26.8, lines = txt.split('\n'), x, y, anchor;
+    if (o.to) { var b = this.p(o.to + '.l'); this.wire([[b[0] - len, b[1]], b], { role: o.role }); x = b[0] - len - 8; y = b[1]; anchor = 'end'; }
+    else { var a = this.p(o.from + '.r'); this.wire([a, [a[0] + len, a[1]]], { role: o.role }); x = a[0] + len + 8; y = a[1]; anchor = 'start'; }
+    var self = this, y0 = y - (lines.length - 1) * 17 / 2 - (o.sub ? 7 : 0);
+    lines.forEach(function (ln, k) { self.label('\\text{' + ln + '}', x, y0 + k * 17, { anchor: anchor, size: S.fsIO, cls: 'r-' + o.role }); });
+    if (o.sub) this.label('\\text{' + o.sub + '}', x, y0 + lines.length * 17 - 2, { anchor: anchor, size: 12, cls: 'r-' + o.role });
+  };
+  P.note = function (txt, x, y, anchor) { return this.label(txt, x, y, { anchor: anchor || 'middle', size: S.fsSmall, cls: 'note' }); };
+  P.math = function (src, x, y, anchor) { return this.label(src, x, y, { anchor: anchor || 'middle', size: 14 }); };
+  P.light = function (ids) {
+    var self = this;
+    Object.keys(this.at).forEach(function (k) { var a = self.at[k]; if (a.g) a.g.classList.toggle('on', ids.indexOf(k) >= 0); });
+  };
+
+  // pre-delivery check; logs to console; ?lint writes results into <pre id=fk-lint>
+  function lint() {
+    var out = [];
+    document.querySelectorAll('svg.fk').forEach(function (svg, si) {
+      var vb = svg.viewBox.baseVal, texts = [].slice.call(svg.querySelectorAll('text')).filter(function (t) { return t.textContent.trim(); });
+      if (vb.width > 1260) out.push('fig' + si + ': viewBox width ' + vb.width + ' > 1260');
+      var boxes = texts.map(function (t) { var b = t.getBBox(); return { t: t, x0: b.x, y0: b.y, x1: b.x + b.width, y1: b.y + b.height }; });
+      boxes.forEach(function (b) {
+        var fs = parseFloat(getComputedStyle(b.t).fontSize);
+        if (fs < 11) out.push('fig' + si + ': text too small ' + fs.toFixed(1) + ' "' + b.t.textContent + '"');
+        if (b.x0 < vb.x - 1 || b.y0 < vb.y - 1 || b.x1 > vb.x + vb.width + 1 || b.y1 > vb.y + vb.height + 1) out.push('fig' + si + ': out of bounds "' + b.t.textContent + '"');
+      });
+      for (var i = 0; i < boxes.length; i++) for (var j = i + 1; j < boxes.length; j++) {
+        var a = boxes[i], c = boxes[j];
+        if (a.x0 < c.x1 - 1 && c.x0 < a.x1 - 1 && a.y0 < c.y1 - 2 && c.y0 < a.y1 - 2) out.push('fig' + si + ': text overlap "' + a.t.textContent + '" × "' + c.t.textContent + '"');
+      }
+      svg.querySelectorAll('.blk').forEach(function (g) {
+        var r = g.querySelector('rect').getBBox();
+        g.querySelectorAll('text').forEach(function (t) { var b = t.getBBox(); if (b.x < r.x + 3 || b.x + b.width > r.x + r.width - 3) out.push('fig' + si + ': label overflows box "' + t.textContent + '"'); });
+        if (g.querySelectorAll('text').length > 3) out.push('fig' + si + ': more than 3 lines in a box');
+      });
+      svg.querySelectorAll('.wire[data-pts]').forEach(function (p) {
+        var pts = JSON.parse(p.getAttribute('data-pts'));
+        boxes.forEach(function (b) {
+          if (b.t.closest('.blk')) return;
+          for (var k = 1; k < pts.length; k++) {
+            var x0 = Math.min(pts[k - 1][0], pts[k][0]), x1 = Math.max(pts[k - 1][0], pts[k][0]), y0 = Math.min(pts[k - 1][1], pts[k][1]), y1 = Math.max(pts[k - 1][1], pts[k][1]);
+            if (x0 < b.x1 - 1 && b.x0 + 1 < x1 + 0.01 && y0 < b.y1 - 1 && b.y0 + 1 < y1 + 0.01) { out.push('fig' + si + ': text on a wire "' + b.t.textContent + '"'); break; }
+          }
+        });
+      });
+      if (svg.querySelector('[filter],filter')) out.push('fig' + si + ': uses filter (glow/shadow): remove');
+    });
+    out.forEach(function (m) { console.warn('[FK.lint] ' + m); });
+    if (!out.length) console.log('[FK.lint] ok');
+    if (/[?&]lint/.test(location.search)) { var pre = document.createElement('pre'); pre.id = 'fk-lint'; pre.textContent = out.length ? out.join('\n') : 'FK.lint ok'; document.body.prepend(pre); }
+    return out;
+  }
+
+  return { fig: function (h, w, hh, l) { return new Fig(h, w, hh, l); }, S: S, W: W, lint: lint, rich: rich };
+})();
+/* ===== FIGKIT JS END ===== */
+
+/* ---------- fig 1: Transformer ---------- */
+(function () {
+  var f = FK.fig('#figArch', 1260, 470, 'Transformer encoder-decoder');
+  var ey = 101.7, dy = 363.5;
+  f.row(ey, 80.3, [
+    { id: 'emb', box: 'Input\nEmbedding', role: 'in', w: 'xl', param: '\\mathbf{E}' },
+    { id: 'a0', add: true },
+    { id: 'd0', dot: true, gap: 25 },
+    { id: 'mha', box: 'Multi-Head\nAttention', role: 'op', w: 'l', param: 'W^Q W^K W^V W^O' },
+    { id: 'a1', add: true },
+    { id: 'ln1', box: 'LN', role: 'norm', w: 's', param: '\\gamma \\beta' },
+    { id: 'd1', dot: true },
+    { id: 'ffn', box: 'Feed\nForward', role: 'op', w: 'ffn', param: 'W_1 b_1 W_2 b_2' },
+    { id: 'a2', add: true },
+    { id: 'ln2', box: 'LN', role: 'norm', w: 's', param: '\\gamma \\beta' }
+  ]);
+  f.stack('d0', 'ln2', { label: 'N\\times', side: 'top' });
+  f.skip('d0', 'a1', 'top'); f.skip('d1', 'a2', 'top'); f.pe('a0', 'top');
+  f.io('Inputs', { to: 'emb', role: 'in' });
+
+  f.row(dy, 232, [
+    { id: 'oemb', box: 'Output\nEmbedding', role: 'in', w: 'xl', param: '\\mathbf{E}' },
+    { id: 'b0', add: true },
+    { id: 'e0', dot: true, gap: 25 },
+    { id: 'mmha', box: 'Masked\nMulti-Head\nAttention', role: 'op', w: 'l', param: 'W^Q W^K W^V W^O' },
+    { id: 'b1', add: true },
+    { id: 'ln3', box: 'LN', role: 'norm', w: 's', param: '\\gamma \\beta' },
+    { id: 'e1', dot: true },
+    { id: 'cmha', box: 'Cross\nMulti-Head\nAttention', role: 'op', w: 'l', param: 'W^Q W^K W^V W^O' },
+    { id: 'b2', add: true },
+    { id: 'ln4', box: 'LN', role: 'norm', w: 's', param: '\\gamma \\beta' },
+    { id: 'e2', dot: true },
+    { id: 'ffn2', box: 'Feed\nForward', role: 'op', w: 'ffn', param: 'W_1 b_1 W_2 b_2' },
+    { id: 'b3', add: true },
+    { id: 'ln5', box: 'LN', role: 'norm', w: 's', param: '\\gamma \\beta' },
+    { id: 'lin', box: 'Linear', role: 'op', w: 'm', gap: 26, param: 'W_U' },
+    { id: 'sm', box: 'Softmax', role: 'out', w: 68.5 }
+  ]);
+  f.stack('e0', 'ln5', { label: 'N\\times', side: 'bottom' });
+  f.skip('e0', 'b1', 'bottom'); f.skip('e1', 'b2', 'bottom'); f.skip('e2', 'b3', 'bottom'); f.pe('b0', 'bottom');
+  f.io('Outputs', { to: 'oemb', role: 'in', sub: '(shifted right)' });
+  f.io('Output\nProbabilities', { from: 'sm', role: 'out' });
+
+  var x = f.p('cmha')[0];
+  f.wire(['ln2.r', [x, ey], 'cmha.t']);
+  f.note('K, V', x + 10, 309, 'start');
+  f.note('Q', 587.6, 351);
+  f.math('Attn(Q, K, V) = softmax(QK^\\top / \\sqrt{d_k}) V', 1008, 214);
+  f.math('h \\mapsto \\role{norm}{LN}(h \\role{norm}{+} Sublayer(h))', 1008, 244);
+
+  // stepper: light the current box, tag its output shape
+  var steps = [
+    { ids: [], say: 'overview: what each row does' },
+    { ids: ['emb'], say: '3 tokens looked up into 3×512', at: 'emb.r', shape: '3\\times512' },
+    { ids: ['mha'], say: 'self-attention: same shape, each row now mixes in other positions', at: 'mha.r', shape: '3\\times512' },
+    { ids: ['ln1'], say: 'residual add, then per-row normalization', at: 'ln1.r', shape: '3\\times512' },
+    { ids: ['ffn'], say: 'per-position MLP, up to 2048 and back', at: 'ffn.r', shape: '3\\times512' },
+    { ids: ['cmha'], say: 'cross-attention: Q from the decoder, K and V from the encoder', at: 'cmha.r', shape: '4\\times512' },
+    { ids: ['sm'], say: 'one distribution over the vocabulary per position', at: 'sm.r', shape: '4\\times|V|' }
+  ];
+  var k = 0, tag = null, ctl = document.getElementById('ctlArch');
+  ctl.innerHTML = '<button aria-label="previous">‹</button><span class="n"></span><button aria-label="next">›</button><span class="say"></span>';
+  function show() {
+    var s = steps[k]; f.light(s.ids);
+    if (tag) tag.remove(); tag = null;
+    if (s.at) { var p = f.p(s.at); tag = f.label(s.shape, p[0] + 7, p[1] - 11, { anchor: 'start', size: 12, cls: 'note' }); }
+    ctl.querySelector('.n').textContent = k + ' / ' + (steps.length - 1);
+    ctl.querySelector('.say').textContent = s.say;
+  }
+  var b = ctl.querySelectorAll('button');
+  b[0].onclick = function () { k = Math.max(0, k - 1); show(); };
+  b[1].onclick = function () { k = Math.min(steps.length - 1, k + 1); show(); };
+  show();
+})();
+
+/* ---------- fig 2: one-hot net <-> W matrix, linked ---------- */
+(function () {
+  var toks = ['Hello', 'world', 'nice', 'to', 'meet'];
+  var Wm = [[2.1, .3, .2, .1, .4], [.2, .1, 2.2, .3, .1], [.1, .2, .3, 2.0, .2], [.3, .2, .1, .4, 1.6], [.2, .1, .2, 2.4, .3]]; // W[j][i], illustrative
+  var f = FK.fig('#figOneHot', 1180, 430, 'one-hot input times W');
+  var svg = f.svg, xi = 175, xo = 495, ys = toks.map(function (_, k) { return 80 + k * 62; });
+  f.label('\\mathbf{x} \\in \\{0,1\\}^5', xi, 26, { size: 15, cls: 'r-in' });
+  f.label('\\mathbf{W} \\in \\mathbb{R}^{5\\times5}', (xi + xo) / 2, 26, { size: 15, cls: 'r-param' });
+  f.label('\\mathbf{a} \\in \\Delta^4', xo, 26, { size: 15, cls: 'r-out' });
+  var edges = [], inN = [], outN = [], cells = [];
+  ys.forEach(function (yi, i) { ys.forEach(function (yo, j) {
+    var e = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    e.setAttribute('class', 'edge'); e.setAttribute('x1', xi + 20); e.setAttribute('y1', yi); e.setAttribute('x2', xo - 20); e.setAttribute('y2', yo);
+    f.gW.appendChild(e); edges.push({ i: i, e: e });
+  }); });
+  function node(cx, cy, role, arr, label) {
+    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('class', 'node hit r-' + role); f.gB.appendChild(g);
+    var c = document.createElementNS('http://www.w3.org/2000/svg', 'circle'); c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', 17); g.appendChild(c);
+    var t = f.label(label, cx, cy, { size: 13, parent: g }); arr.push({ g: g, c: c, t: t }); return g;
+  }
+  ys.forEach(function (y, i) {
+    var g = node(xi, y, 'in', inN, '0'); g.onclick = function () { sel(i); };
+    f.label('\\texttt{' + toks[i] + '}', xi - 92, y, { anchor: 'end', size: 13, cls: 'r-in' });
+    f.label('i = ' + i, xi - 30, y, { anchor: 'end', size: 13, cls: 'r-in' });
+    node(xo, y, 'out', outN, '');
+    f.label('j = ' + i, xo + 30, y, { anchor: 'start', size: 13, cls: 'r-out' });
+    f.label('\\texttt{' + toks[i] + '}', xo + 82, y, { anchor: 'start', size: 13, cls: 'r-out' });
+  });
+  f.math('\\role{out}{\\mathbf{a}} = softmax(\\role{param}{\\mathbf{W}}\\role{in}{\\mathbf{x}})', (xi + xo) / 2, 405);
+  // right panel: matrix
+  var mx = 790, my = 80, cw = 58, ch = 44;
+  toks.forEach(function (t, i) {
+    f.label('\\texttt{' + t + '}', mx + i * cw + cw / 2, my - 40, { size: 12, cls: 'r-in' });
+    f.label('i = ' + i, mx + i * cw + cw / 2, my - 18, { size: 12, cls: 'r-in' });
+    f.label('j = ' + i, mx - 12, my + i * ch + ch / 2, { anchor: 'end', size: 12, cls: 'r-out' });
+  });
+  for (var j = 0; j < 5; j++) for (var i = 0; i < 5; i++) {
+    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('class', 'cell r-in hit'); f.gB.appendChild(g);
+    var r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    r.setAttribute('x', mx + i * cw); r.setAttribute('y', my + j * ch); r.setAttribute('width', cw); r.setAttribute('height', ch); g.appendChild(r);
+    f.label(Wm[j][i].toFixed(1), mx + i * cw + cw / 2, my + j * ch + ch / 2, { size: 13, parent: g });
+    (function (ii) { g.onclick = function () { sel(ii); }; })(i);
+    cells.push({ i: i, g: g });
+  }
+  f.label('\\role{param}{W}_{ji}', mx + 2.5 * cw, my + 5 * ch + 26, { size: 14 });
+  function sel(s) {
+    inN.forEach(function (n, k) { n.g.classList.toggle('on', k === s); n.t.textContent = k === s ? '1' : '0'; });
+    edges.forEach(function (e) { e.e.classList.toggle('on', e.i === s); });
+    cells.forEach(function (c) { c.g.classList.toggle('on', c.i === s); });
+    var z = Wm.map(function (row) { return row[s]; }), m = Math.max.apply(null, z), ex = z.map(function (v) { return Math.exp(v - m); }), Z = ex.reduce(function (a, b) { return a + b; });
+    outN.forEach(function (n, j) { var a = ex[j] / Z; n.c.style.fill = 'color-mix(in srgb, var(--out-hi) ' + Math.round(a * 100) + '%, var(--out-fill))'; n.g.classList.toggle('on', a === Math.max.apply(null, ex) / Z); });
+  }
+  sel(3);
+})();
+
+/* ---------- fig 3: temperature slider + leader callout ---------- */
+(function () {
+  var toks = ['Hello', 'world', 'nice', 'to', 'meet'], z = [.4, 1.1, .2, .8, 2.0];
+  var f = FK.fig('#figTemp', 900, 300, 'softmax temperature');
+  var x0 = 120, bw = 54, gap = 34, base = 230, hmax = 170, bars = [];
+  f.wire([[x0 - 20, base], [x0 + 5 * (bw + gap) + 10, base]], { arrow: false });
+  toks.forEach(function (t, j) {
+    var g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('class', 'cell ' + (j === 4 ? 'r-out on' : 'r-wire')); f.gB.appendChild(g);
+    var r = document.createElementNS('http://www.w3.org/2000/svg', 'rect'); r.setAttribute('x', x0 + j * (bw + gap)); r.setAttribute('width', bw); g.appendChild(r);
+    f.label('\\texttt{' + t + '}', x0 + j * (bw + gap) + bw / 2, base + 20, { size: 13, cls: 'r-out' });
+    bars.push(r);
+  });
+  var lead = document.createElementNS('http://www.w3.org/2000/svg', 'line'); lead.setAttribute('class', 'lead r-out'); f.gW.appendChild(lead);
+  var call = null;
+  var ctl = document.getElementById('ctlTemp');
+  ctl.innerHTML = '<span style="font-family:KaTeX_Math,serif;font-style:italic;color:var(--out)">τ</span><input type="range" min="0.1" max="4" step="0.01" value="1" aria-label="temperature"><span class="v"></span>';
+  var inp = ctl.querySelector('input');
+  function draw() {
+    var tau = +inp.value, m = Math.max.apply(null, z), ex = z.map(function (v) { return Math.exp((v - m) / tau); }), Z = ex.reduce(function (a, b) { return a + b; });
+    ex.forEach(function (e, j) { var h = Math.max(2, hmax * e / Z); bars[j].setAttribute('y', base - h); bars[j].setAttribute('height', h); });
+    var a4 = ex[4] / Z, top = base - hmax * a4, bx = x0 + 4 * (bw + gap) + bw;
+    lead.setAttribute('x1', bx - 10); lead.setAttribute('y1', top + 12); lead.setAttribute('x2', bx + 46); lead.setAttribute('y2', top + 12);
+    if (call) call.remove();
+    call = f.label('\\role{out}{a}_{\\texttt{meet}} = ' + a4.toFixed(2), bx + 52, top + 12, { anchor: 'start', size: 15, cls: 'r-out' });
+    ctl.querySelector('.v').textContent = tau.toFixed(2);
+  }
+  inp.oninput = draw; draw();
+})();
+
+/* ---------- fig 4: tensor shapes ---------- */
+(function () {
+  var f = FK.fig('#figTensor', 1000, 310, 'vector, matrix, tensor shapes');
+  var NSs = 'http://www.w3.org/2000/svg';
+  function grid(x, y, cols, rows, s, role) {
+    var g = document.createElementNS(NSs, 'g'); g.setAttribute('class', 'blk r-' + role); f.gB.appendChild(g);
+    for (var r = 0; r < rows; r++) for (var c = 0; c < cols; c++) { var q = document.createElementNS(NSs, 'rect'); q.setAttribute('x', x + c * s); q.setAttribute('y', y + r * s); q.setAttribute('width', s); q.setAttribute('height', s); q.setAttribute('rx', 0); g.appendChild(q); }
+  }
+  var s = 26, y = 66;
+  f.note('\\text{vector}', 150, 22); grid(140, y, 1, 4, s, 'in');
+  f.wire([[115, y], [115, y + 4 * s]]); f.note('n', 101, y + 2 * s);
+  f.label('x \\in \\mathbb{R}^n', 153, 234, { size: 16, cls: 'r-in' });
+  f.label('\\texttt{np.zeros(n)}', 153, 268, { size: 13, cls: 'r-in' });
+
+  f.note('\\text{matrix}', 495, 22); grid(456, y, 3, 4, s, 'out');
+  f.wire([[431, y], [431, y + 4 * s]]); f.note('n', 417, y + 2 * s);
+  f.wire([[456, y + 4 * s + 16], [456 + 3 * s, y + 4 * s + 16]]); f.note('m', 495, y + 4 * s + 30);
+  f.label('x \\in \\mathbb{R}^{n\\times m}', 495, 234, { size: 16, cls: 'r-out' });
+  f.label('\\texttt{np.zeros((n, m))}', 495, 268, { size: 13, cls: 'r-out' });
+
+  var X = 800, d = 16; // oblique projection: back faces as a faint same-color outline
+  var g = document.createElementNS(NSs, 'g'); g.setAttribute('class', 'r-op'); f.gS.appendChild(g);
+  var back = document.createElementNS(NSs, 'path');
+  back.setAttribute('d', 'M' + X + ' ' + y + 'l' + 2 * d + ' ' + -2 * d + 'h' + 3 * s + 'v' + 4 * s + 'l' + -2 * d + ' ' + 2 * d);
+  back.setAttribute('style', 'fill:var(--f);stroke:var(--c);stroke-width:1.5;opacity:.55'); g.appendChild(back);
+  grid(X, y, 3, 4, s, 'op');
+  f.wire([[X - 25, y], [X - 25, y + 4 * s]]); f.note('n', X - 39, y + 2 * s);
+  f.wire([[X, y + 4 * s + 16], [X + 3 * s, y + 4 * s + 16]]); f.note('m', X + 39, y + 4 * s + 30);
+  f.wire([[X + 3 * s + 12, y + 4 * s - 4], [X + 3 * s + 12 + 2 * d, y + 4 * s - 4 - 2 * d]]); f.note('p', X + 3 * s + 2 * d + 22, y + 4 * s - 2 * d - 6);
+  f.note('\\text{third-order tensor}', X + 50, 22);
+  f.label('x \\in \\mathbb{R}^{n\\times m\\times p}', X + 50, 234, { size: 16, cls: 'r-op' });
+  f.label('\\texttt{np.zeros((n, m, p))}', X + 50, 268, { size: 13, cls: 'r-op' });
+})();
+
+/* ---------- page: KaTeX, theme, TOC ---------- */
+document.addEventListener('DOMContentLoaded', function () {
+  if (window.renderMathInElement) renderMathInElement(document.body, {
+    delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }],
+    trust: true, strict: false, macros: { '\\role': '\\htmlClass{r-#1}{#2}' }, ignoredTags: ['script', 'style', 'pre', 'svg']
+  });
+  document.fonts.ready.then(function () { FK.lint(); });
+});
+document.getElementById('themeBtn').onclick = function () {
+  var t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', t); localStorage.setItem('theme', t);
+};
+document.getElementById('navBtn').onclick = function () { document.body.classList.toggle('nav-hidden'); };
+</script>
+</body>
+</html>

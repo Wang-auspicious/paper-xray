@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HiSPF figure</title>
+<style>
+:root{
+  --paper:#171615;
+  --paper-2:#23211f;
+  --ink:#f0e7d8;
+  --muted:#d3c6b3;
+  --faint:#a09282;
+  --rule:#706457;
+  --grid:rgba(240,231,216,.035);
+  --market:#9ccce0;
+  --belief:#e8bf6a;
+  --narrative:#a6cda0;
+  --cpi:#d0a9d2;
+  --target:#ed8578;
+  --mono:"SFMono-Regular",Consolas,"Liberation Mono","Noto Sans Mono",monospace;
+  --serif:Georgia,"Times New Roman","Noto Serif SC",serif;
+}
+html[data-theme="warm"]{
+  --paper:#f0ece3;
+  --paper-2:#fbf8f1;
+  --ink:#29241f;
+  --muted:#574f46;
+  --faint:#81776b;
+  --rule:#aaa094;
+  --grid:rgba(41,36,31,.045);
+  --market:#3b6e88;
+  --belief:#946b16;
+  --narrative:#4b7447;
+  --cpi:#79517b;
+  --target:#a33f36;
+}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;min-height:100%;background:var(--paper);color:var(--ink)}
+body{display:flex;align-items:flex-start;justify-content:center;padding:8px;overflow:auto;font-family:var(--serif);font-variant-numeric:tabular-nums lining-nums;-webkit-font-smoothing:antialiased}
+.figure{position:relative;width:min(820px,calc(100vw - 16px));height:460px;min-width:0;min-height:0;background:var(--paper)}
+.toolbar{
+  position:absolute;z-index:3;top:10px;left:14px;right:14px;
+  display:flex;align-items:center;gap:9px;height:20px;
+  color:var(--muted);font:9px var(--mono);font-variant-numeric:tabular-nums lining-nums;
+}
+.toolbar-id{color:var(--ink);letter-spacing:.1em}
+.toolbar-sep{color:var(--faint)}
+.toolbar button,.toolbar select{
+  appearance:none;border:0;border-bottom:1px solid transparent;border-radius:0;
+  padding:1px 3px;background:transparent;color:var(--muted);
+  font:9px var(--mono);font-variant-numeric:tabular-nums lining-nums;cursor:pointer;
+}
+.toolbar button:hover,.toolbar select:hover,.toolbar button:focus-visible,.toolbar select:focus-visible{
+  color:var(--ink);border-bottom-color:var(--ink);outline:none;
+}
+.toolbar-spacer{flex:1}
+.step-track{width:68px;height:1px;background:var(--rule)}
+.step-track i{display:block;width:10%;height:1px;background:var(--ink);transition:width .2s ease}
+#inspect{min-width:110px;text-align:right;color:var(--muted);white-space:nowrap}
+#canvas{
+  position:absolute;inset:34px 10px 6px;display:flex;align-items:flex-start;justify-content:center;
+  overflow:hidden;
+}
+svg{display:block;width:min(820px,100%);height:auto;flex:0 0 auto;color:var(--ink)}
+svg text{font-family:var(--serif);fill:var(--ink);user-select:none}
+svg .num{font-family:var(--mono);font-size:9.5px;font-variant-numeric:tabular-nums lining-nums;letter-spacing:0}
+svg .label{font-size:10px;letter-spacing:.08em}
+svg .micro{font-size:8px;letter-spacing:.015em}
+svg .dim{fill:var(--muted)}
+svg .faint{fill:var(--faint)}
+svg .rule{fill:none;stroke:var(--rule);stroke-width:.7}
+svg .soft-rule{fill:none;stroke:var(--rule);stroke-width:.55;opacity:.55}
+svg .flow{fill:none;stroke:var(--faint);stroke-width:.8;opacity:.48;marker-end:url(#arrow)}
+svg .flow.bundle{stroke-width:1.2;opacity:.7}
+svg .flow.active{stroke:var(--ink);stroke-width:1.25;opacity:1;stroke-dasharray:4 5;animation:dash 1s linear infinite}
+svg .flow.market.active{stroke:var(--market)}
+svg .flow.belief.active{stroke:var(--belief)}
+svg .flow.narrative.active{stroke:var(--narrative)}
+svg .flow.cpi.active{stroke:var(--cpi)}
+svg .node{
+  fill:var(--paper-2);stroke:var(--faint);stroke-width:.8;opacity:.82;
+  transition:fill .14s,stroke .14s,opacity .14s,filter .14s;
+}
+svg .node.revealed{opacity:1}
+svg .node.active{stroke:var(--ink);filter:url(#nodeGlow);opacity:1}
+svg .node.market.active{fill:var(--market)}
+svg .node.belief.active{fill:var(--belief)}
+svg .node.narrative.active{fill:var(--narrative)}
+svg .node.cpi.active{fill:var(--cpi)}
+svg .node.target.active{fill:var(--target);stroke:var(--target)}
+svg .node.interactive{cursor:pointer}
+svg .node.interactive:hover,svg .node.interactive:focus{stroke:var(--ink);filter:url(#nodeGlow);opacity:1;outline:none}
+svg .gate-stem{stroke:var(--faint);stroke-width:6;stroke-linecap:round;opacity:.7}
+svg .gate-dot{stroke:var(--paper);stroke-width:1}
+svg .merge-spine{fill:none;stroke:var(--rule);stroke-width:.8}
+svg .merge-dot{fill:var(--paper-2);stroke:var(--faint);stroke-width:.7}
+svg .merge-dot.active{fill:var(--ink);stroke:var(--ink)}
+svg .merge-dot.interactive{cursor:pointer}
+svg .merge-dot.interactive:hover,svg .merge-dot.interactive:focus{fill:var(--ink);stroke:var(--ink);filter:url(#nodeGlow);outline:none}
+svg .prediction{font-family:var(--mono);font-size:9.5px;font-variant-numeric:tabular-nums lining-nums}
+svg .prediction-value{fill:var(--target)}
+@keyframes dash{to{stroke-dashoffset:-18}}
+@media (max-width:760px){
+  .figure{width:100%;min-width:0}
+  #canvas{inset-left:4px;inset-right:4px;overflow:auto;justify-content:flex-start}
+  svg{min-width:820px}
+  #inspect{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important}
+}
+</style>
+</head>
+<body>
+<main class="figure" aria-label="HiSPF interactive paper figure">
+  <div class="toolbar">
+    <span class="toolbar-id">HISPF · FIG.</span>
+    <span class="toolbar-sep">/</span><span>τ</span><span id="targetMonth">2021-01</span>
+    <span class="toolbar-sep">/</span><span>h</span>
+    <select id="horizon" aria-label="forecast horizon"><option value="1">1</option><option value="3">3</option><option value="6">6</option><option value="12">12</option></select>
+    <button id="theme" type="button" aria-label="toggle theme">◐</button>
+    <span class="toolbar-sep">/</span>
+    <button id="prev" type="button" aria-label="previous step">←</button>
+    <button id="play" type="button" aria-label="play">▶</button>
+    <button id="next" type="button" aria-label="next step">→</button>
+    <button id="reset" type="button" aria-label="reset">↺</button>
+    <span class="toolbar-spacer"></span>
+    <span id="inspect">click a node</span>
+    <span id="stepLabel">01/10</span>
+    <span class="step-track"><i id="progress"></i></span>
+  </div>
+  <div id="canvas">
+    <svg id="diagram" viewBox="0 0 820 460" role="img" aria-label="HiSPF 12 year zero fill network figure">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto">
+          <path d="M0,0 L10,5 L0,10 Z" fill="currentColor"></path>
+        </marker>
+        <filter id="nodeGlow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="1.6" result="b"></feGaussianBlur>
+          <feMerge><feMergeNode in="b"></feMergeNode><feMergeNode in="SourceGraphic"></feMerge></feMerge>
+        </filter>
+      </defs>
+      <rect x="0" y="0" width="820" height="460" fill="var(--paper)"></rect>
+      <g id="timeline">
+        <line class="rule" x1="20" y1="30" x2="800" y2="30"></line>
+        <circle class="node target interactive" data-stage="0" data-view="target" data-label="target τ" data-shape="one month" data-value="2021-01" cx="760" cy="30" r="3.2"></circle>
+        <circle class="node interactive" data-stage="0" data-view="time" data-label="train start" data-shape="first of 144 months" cx="78" cy="30" r="2.8"></circle>
+        <circle class="node interactive" data-stage="0" data-view="time" data-label="split" data-shape="115 / 29" data-value="115 train · 29 validation" cx="470" cy="30" r="2.8"></circle>
+        <circle class="node interactive" data-stage="0" data-view="time" data-label="origin" data-shape="τ − h" data-value="2020-12" cx="650" cy="30" r="2.8"></circle>
+        <text class="num dim" x="57" y="17">2008-12</text>
+        <text class="num dim" x="445" y="17">115/144</text>
+        <text class="num dim" x="631" y="17" data-text="origin">2020-12</text>
+        <text class="num dim" x="742" y="17">2021-01</text>
+        <text class="micro faint" x="20" y="45">144 months · origin = τ − h · train_end = origin − h</text>
+      </g>
+      <g id="stageLabels">
+        <text class="label dim" x="20" y="65">IN</text><text class="label dim" x="164" y="65">32</text>
+        <text class="label dim" x="271" y="65">16</text><text class="label dim" x="359" y="65">S</text>
+        <text class="label dim" x="430" y="65">P⊥</text><text class="label dim" x="500" y="65">g</text>
+        <text class="label dim" x="615" y="65">QKV</text><text class="label dim" x="751" y="65">ŷ</text>
+        <text class="micro faint" x="20" y="76">xᵥ</text><text class="micro faint" x="164" y="76">W₁x+b</text>
+        <text class="micro faint" x="271" y="76">rᵥ</text><text class="micro faint" x="359" y="76">shared</text>
+        <text class="micro faint" x="430" y="76">⊥ shared</text><text class="micro faint" x="500" y="76">σ</text>
+        <text class="micro faint" x="615" y="76">α · V</text><text class="micro faint" x="751" y="76">scalar</text>
+      </g>
+      <g id="flows"></g><g id="nodes"></g><g id="labels"></g><g id="annotations"></g>
+    </svg>
+  </div>
+</main>
+<script>
+(function(){
+  "use strict";
+  var NS="http://www.w3.org/2000/svg";
+  var svg=document.getElementById("diagram"), flows=document.getElementById("flows"), nodes=document.getElementById("nodes"), labels=document.getElementById("labels"), annotations=document.getElementById("annotations");
+  var state={step:0,h:1,playing:false,timer:null};
+  var stages=["timeline","input","screen","encoder","activation","repr","branch","fusion","head","train"];
+  var colors={market:"var(--market)",belief:"var(--belief)",narrative:"var(--narrative)",cpi:"var(--cpi)",target:"var(--target)"};
+  var lane={market:128,belief:230,narrative:332};
+  var names={market:"M",belief:"B",narrative:"N"};
+  var run={
+    1:{origin:"2020-12",train:"2008-12 → 2020-11",target:"11.2475",pred:"3.1064",selM:"1245",selB:"1258",gate:[".0474",".0474",".0474"],att:[".332",".335",".333"]},
+    3:{origin:"2020-10",train:"2008-08 → 2020-07",target:"4.1081",pred:"3.6738",selM:"328",selB:"361",gate:[".0473",".0474",".0474"],att:[".332",".336",".332"]},
+    6:{origin:"2020-07",train:"2008-02 → 2020-01",target:"4.5834",pred:"1.3645",selM:"1484",selB:"1486",gate:[".0474",".0474",".0475"],att:[".334",".332",".334"]},
+    12:{origin:"2020-01",train:"2007-02 → 2019-01",target:"−.2219",pred:"3.0739",selM:"90",selB:"32",gate:[".0474",".0474",".0474"],att:[".335",".332",".333"]}
+  };
+  var pos={market:{h:[],r:[],s:[],p:[]},belief:{h:[],r:[],s:[],p:[]},narrative:{h:[],r:[],s:[],p:[]}};
+  function make(tag,attrs,parent){
+    var n=document.createElementNS(NS,tag); Object.keys(attrs||{}).forEach(function(k){n.setAttribute(k,attrs[k]);}); if(parent){parent.appendChild(n);} return n;
+  }
+  function addText(x,y,t,cls,parent){var n=make("text",{x:x,y:y,class:cls||""},parent||labels);n.textContent=t;return n;}
+  function addLine(d,cls,stage,view){return make("path",{d:d,class:"flow "+(cls||""),"data-stage":stage,"data-view":view||""},flows);}
+  function addNode(x0,y0,r,cls,stage,info){
+    var a={cx:x0,cy:y0,r:r,class:"node interactive "+(cls||""),"data-stage":stage,tabindex:"0","focusable":"true","aria-label":info.label||"node"};
+    Object.keys(info||{}).forEach(function(k){if(k!=="label"){a["data-"+k]=info[k];}});
+    return make("circle",a,nodes);
+  }
+  function grid(n,x0,y0,cols,gx,gy){var a=[];for(var i=0;i<n;i++){a.push({x:x0+(i%cols)*gx,y:y0+Math.floor(i/cols)*gy});}return a;}
+  function build(){
+    ["market","belief","narrative"].forEach(function(view){
+      var yy=lane[view], c=colors[view], upper=yy-26;
+      pos[view].h=grid(32,164,yy-26,4,12,7.5);
+      pos[view].r=grid(16,268,yy-14,4,10,10);
+      pos[view].s=grid(16,355,yy-14,4,9,9);
+      pos[view].p=grid(16,426,yy-14,4,9,9);
+      make("line",{x1:20,y1:yy+53,x2:800,y2:yy+53,class:"soft-rule"},annotations);
+      var lt=addText(20,yy-27,view.toUpperCase(),"label",labels);lt.setAttribute("fill",c);
+      addText(20,yy-14,view==="narrative"?"180":"1500","num dim",labels);
+      addText(42,yy-14,view==="narrative"?"topics":"slots","micro dim",labels);
+      addNode(80,yy,3.6,view,1,{view:view,label:view.toUpperCase()+" input",shape:view==="narrative"?"R^180":"R^1500",value:view==="narrative"?"180":"1500"});
+      addText(20,yy+13,view==="narrative"?"x_N ∈ R^180":"x_"+names[view]+" ∈ R^1500","num",labels);
+      addText(20,yy+27,view==="narrative"?"topic simplex":"zero-filled / fixed","micro dim",labels);
+      pos[view].h.forEach(function(p,i){
+        addNode(p.x,p.y,2.7,view,3,{view:view,label:view.toUpperCase()+" hidden "+String(i+1).padStart(2,"0")+"/32",shape:"scalar",value:"z["+String(i+1).padStart(2,"0")+"]"});
+        addLine("M 84 "+yy+" C 112 "+yy+", 132 "+p.y+", "+(p.x-3)+" "+p.y,view,3,view);
+      });
+      addLine("M 225 "+yy+" C 240 "+yy+", 250 "+yy+", 264 "+yy,"bundle "+view,5,view);
+      pos[view].r.forEach(function(p,i){addNode(p.x,p.y,2.4,view,5,{view:view,label:view.toUpperCase()+" representation "+String(i+1).padStart(2,"0")+"/16",shape:"scalar",value:"r["+String(i+1).padStart(2,"0")+"]"});});
+      var rc=pos[view].r[5];
+      addLine("M 304 "+rc.y+" C 326 "+rc.y+", 337 "+(yy-5)+", 351 "+(yy-5),view,6,view);
+      addLine("M 304 "+rc.y+" C 328 "+rc.y+", 338 "+(yy+5)+", 422 "+(yy+5),view,6,view);
+      pos[view].s.forEach(function(p,i){addNode(p.x,p.y,2.3,view,6,{view:view,label:view.toUpperCase()+" shared "+String(i+1).padStart(2,"0")+"/16",shape:"scalar",value:"s["+String(i+1).padStart(2,"0")+"]"});});
+      pos[view].p.forEach(function(p,i){addNode(p.x,p.y,2.3,view,6,{view:view,label:view.toUpperCase()+" private "+String(i+1).padStart(2,"0")+"/16",shape:"scalar",value:"p⊥["+String(i+1).padStart(2,"0")+"]"});});
+      addText(268,yy+30,"16","num dim",labels);addText(356,yy+30,"16","num dim",labels);addText(427,yy+30,"16","num dim",labels);
+      addNode(505,yy,3.5,view,6,{view:view,label:view.toUpperCase()+" gate",shape:"[0,1]",value:run[1].gate[view==="market"?0:view==="belief"?1:2]});
+      make("line",{x1:505,y1:yy-21,x2:505,y2:yy+21,class:"gate-stem"},annotations);
+      var gl=addText(514,yy+3,".0474","num dim",labels);gl.setAttribute("data-gate",view);
+      addLine("M 462 "+yy+" C 477 "+yy+", 488 "+yy+", 501 "+yy,view,7,view);
+      var fy=view==="market"?170:view==="belief"?230:290;
+      addLine("M 509 "+yy+" C 548 "+yy+", 559 "+fy+", 584 "+fy,view+" bundle",7,view);
+    });
+    var fy=[170,230,290], views=["market","belief","narrative"];
+    make("line",{x1:610,y1:fy[0],x2:610,y2:fy[2],class:"merge-spine"},annotations);
+    fy.forEach(function(y0,i){
+      addNode(592,y0,3.4,views[i],7,{view:views[i],label:views[i].toUpperCase()+" attention",shape:"scalar",value:"α_"+names[views[i]]});
+      var al=addText(600,y0+3,"α_"+names[views[i]]+"  .333","num dim",labels);al.setAttribute("data-att",views[i]);
+      make("circle",{cx:610,cy:y0,r:2.2,class:"merge-dot interactive","data-stage":"7","data-label":"QKV merge","data-shape":"view fusion","data-value":views[i],"tabindex":"0","focusable":"true","aria-label":"QKV merge"},annotations);
+      addLine("M 596 "+y0+" L 608 "+y0,views[i],7,views[i]);
+    });
+    addNode(630,230,4,"target",7,{label:"learned query q",shape:"R^16",value:"q"});
+    addText(625,216,"q","micro",labels);
+    addLine("M 630 230 L 610 230","target bundle",7,"target");
+    var fused=grid(16,662,216,4,9,9);
+    fused.forEach(function(p,i){addNode(p.x,p.y,2.4,"target",8,{label:"fused shared "+String(i+1).padStart(2,"0")+"/16",shape:"scalar",value:"f["+String(i+1).padStart(2,"0")+"]"});});
+    addLine("M 610 230 C 625 230, 642 230, 659 230","target bundle",8,"target");
+    addText(660,270,"fused 16","num dim",labels);
+    addLine("M 707 230 L 736 230","target bundle",8,"target");
+    addNode(744,230,3.8,"target",8,{label:"financial head",shape:"16 → 16 → 1",value:"ŷ_fin"});
+    addText(754,234,"ŷ","prediction",labels);
+    var pv=addText(770,234,"3.1064","prediction prediction-value",labels);pv.setAttribute("data-prediction","true");
+    addText(716,258,"+ cpi_head + b","micro dim",labels);
+    addText(20,411,"CPI","label",labels).setAttribute("fill",colors.cpi);
+    addText(20,425,"h_cpi ∈ R^5","num",labels);
+    for(var j=0;j<5;j++){addNode(100+j*10,421,2.2,"cpi",1,{view:"cpi",label:"CPI lag "+(j+1),shape:"scalar",value:"h["+j+"]"});}
+    addLine("M 158 421 C 355 410, 542 378, 733 245","cpi",8,"cpi");
+    addText(20,449,"115/29 · λ_GL=.2 · clip=5 · 240 windows","num dim",labels);
+    addText(689,449,"h = 1/3/6/12","num dim",labels);
+  }
+  function current(){return run[state.h];}
+  function render(){
+    var d=current();
+    svg.setAttribute("data-step",String(state.step));
+    document.querySelector("[data-text=origin]").textContent=d.origin;
+    document.querySelector("[data-prediction=true]").textContent=d.pred;
+    document.querySelector("[data-gate=market]").textContent=d.gate[0];
+    document.querySelector("[data-gate=belief]").textContent=d.gate[1];
+    document.querySelector("[data-gate=narrative]").textContent=d.gate[2];
+    document.querySelector("[data-att=market]").textContent="α_M  "+d.att[0];
+    document.querySelector("[data-att=belief]").textContent="α_B  "+d.att[1];
+    document.querySelector("[data-att=narrative]").textContent="α_N  "+d.att[2];
+    document.getElementById("stepLabel").textContent=String(state.step+1).padStart(2,"0")+"/10";
+    document.getElementById("progress").style.width=((state.step+1)*10)+"%";
+    document.querySelectorAll("#diagram [data-stage]").forEach(function(n){var s=Number(n.getAttribute("data-stage"));n.classList.toggle("revealed",s<=state.step);n.classList.toggle("active",s===state.step);});
+    document.querySelectorAll("#diagram .flow").forEach(function(n){var s=Number(n.getAttribute("data-stage"));n.classList.toggle("revealed",s<=state.step);n.classList.toggle("active",s===state.step);});
+  }
+  function inspect(node){
+    var v=node.getAttribute("data-view")||"";
+    var label=node.getAttribute("data-label")||"node";
+    var shape=node.getAttribute("data-shape")||"";
+    var value=node.getAttribute("data-value")||"";
+    document.getElementById("inspect").textContent=label+" · "+shape+" · "+value;
+  }
+  function stop(){state.playing=false;if(state.timer){clearInterval(state.timer);state.timer=null;}document.getElementById("play").textContent="▶";}
+  function next(){if(state.step<9){state.step+=1;render();}else{stop();}}
+  function prev(){stop();if(state.step>0){state.step-=1;render();}}
+  function play(){if(state.playing){stop();return;}if(state.step>=9){state.step=0;render();}state.playing=true;document.getElementById("play").textContent="Ⅱ";state.timer=setInterval(function(){if(state.step>=9){stop();}else{state.step+=1;render();}},1500);}
+  build();render();
+  document.getElementById("horizon").addEventListener("change",function(e){stop();state.h=Number(e.target.value);render();});
+  document.getElementById("prev").addEventListener("click",prev);document.getElementById("next").addEventListener("click",next);document.getElementById("play").addEventListener("click",play);
+  document.getElementById("reset").addEventListener("click",function(){stop();state.step=0;document.getElementById("inspect").textContent="click a node";render();});
+  document.getElementById("theme").addEventListener("click",function(){document.documentElement.dataset.theme=document.documentElement.dataset.theme==="dark"?"warm":"dark";});
+  document.querySelectorAll("#diagram .interactive").forEach(function(node){
+    node.addEventListener("mouseenter",function(){node.classList.add("active");});
+    node.addEventListener("mouseleave",function(){if(Number(node.getAttribute("data-stage"))!==state.step){node.classList.remove("active");}});
+    node.addEventListener("focus",function(){node.classList.add("active");});
+    node.addEventListener("blur",function(){if(Number(node.getAttribute("data-stage"))!==state.step){node.classList.remove("active");}});
+    node.addEventListener("click",function(){inspect(node);});
+    node.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();inspect(node);}});
+  });
+  document.addEventListener("keydown",function(e){if(e.target.tagName==="SELECT"){return;}if(e.key==="ArrowRight"){next();}if(e.key==="ArrowLeft"){prev();}if(e.key===" "){e.preventDefault();play();}if(e.key==="Escape"){document.getElementById("inspect").textContent="click a node";}});
+})();
+</script>
+</body>
+</html>
