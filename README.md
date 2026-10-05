@@ -80,6 +80,10 @@ Top row: an interactive HTML x-ray (DINO), English and Chinese. Bottom row: the 
 
 ![Interactive HTML x-ray output and the paginated A4 prompt, English and Chinese](./assets/showcase-grid.jpg)
 
+Four screens from the same document at 1600×900 each — the output **after the figure specification was rewritten**: color carries a role rather than decorating, a box holds a name and nothing else, wires run horizontally and vertically only, and a figure contains no title, no legend, no filter. Every screen keeps the table of contents flush left and the body running to the right edge.
+
+![Four screens of the DINO x-ray produced under the revised figure specification](./assets/dino-screens-4up.png)
+
 ## Live demos
 
 Open these directly in a browser — single files, no build, no server.
