@@ -124,9 +124,9 @@ paper-xray/
 If this saved you a reread, a star helps other people find it.
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=Wang-auspicious/paper-xray&type=Date&theme=dark">
-  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=Wang-auspicious/paper-xray&type=Date&theme=light">
-  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=Wang-auspicious/paper-xray&type=Date&theme=light">
+  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=wang-auspicious/paper-xray&type=Date&theme=dark&v=20261023">
+  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=wang-auspicious/paper-xray&type=Date&theme=light&v=20261023">
+  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=wang-auspicious/paper-xray&type=Date&theme=light&v=20261023">
 </picture>
 
 ## License
